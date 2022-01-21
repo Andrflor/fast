@@ -18,7 +18,6 @@ typedef Toast = GetSnackBar;
 typedef Utils = GetUtils;
 typedef Middleware = GetMiddleware;
 typedef NavConfig = GetNavConfig;
-typedef Connect = GetConnect;
 typedef NavPage = GetPage;
 typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends Controller> = GetBuilder<T>;
@@ -35,3 +34,231 @@ TextTheme get TextTheming => Theming.textTheme;
 /// Syntaxic sugar for TextTheming
 // ignore: non_constant_identifier_names
 ColorScheme get Palette => Theming.colorScheme;
+
+abstract class RetryPolicy {
+  const RetryPolicy();
+
+  Future<Response<T>> run<T>(
+      Future<Response<T>> Function() callback, bool Function(int?) retryCode,
+      {RetryPolicy? retryPolicy});
+}
+
+class NoRetryPolicy extends RetryPolicy {
+  @override
+  Future<Response<T>> run<T>(
+      Future<Response<T>> Function() callback, bool Function(int?) retryCode,
+      {RetryPolicy? retryPolicy}) {
+    return callback();
+  }
+}
+
+class TimedRetryPolicy extends RetryPolicy {
+  final int interval;
+  final int duration;
+
+  const TimedRetryPolicy(this.duration, this.interval);
+
+  @override
+  Future<Response<T>> run<T>(
+      Future<Response<T>> Function() callback, bool Function(int?) retryCode,
+      {RetryPolicy? retryPolicy}) async {
+    var locked = true;
+    var isOk = false;
+    late Response<T> callResult;
+    Future.delayed(Duration(milliseconds: duration), () => locked = false);
+    while (locked) {
+      callResult = await callback();
+      isOk = retryCode(callResult.statusCode);
+      if (isOk) {
+        locked = false;
+      } else {
+        await Future.delayed(Duration(milliseconds: interval));
+      }
+    }
+    return callResult;
+  }
+}
+
+class Connect extends GetConnect {
+  static Future<Response<T>> noRetry<T>(
+      Future<Response<T>> Function() fonction) {
+    return fonction();
+  }
+
+  static RetryPolicy defaultRetryPolicy = const TimedRetryPolicy(800, 100);
+
+  //ignore: prefer_function_declarations_over_variables
+  static bool Function(int?) defaultRetryCode =
+      (int? code) => code == null || code > 500;
+
+  RetryPolicy retryPolicy = defaultRetryPolicy;
+  bool Function(int?) retryCode = defaultRetryCode;
+
+  Future<Response<T>> _retry<T>(Future<Response<T>> Function() callback,
+      {RetryPolicy? retryPolicy, bool Function(int?)? retryCode}) {
+    var _retryPolicy = retryPolicy;
+    var _retryCode = retryCode;
+
+    if (retryPolicy == null) _retryPolicy = this.retryPolicy;
+    if (retryCode == null) _retryCode = this.retryCode;
+    return _retryPolicy == null || _retryCode == null
+        ? callback()
+        : _retryPolicy.run(callback, _retryCode);
+  }
+
+  @override
+  Future<Response<T>> get<T>(
+    String url, {
+    Map<String, String>? headers,
+    String? contentType,
+    Map<String, dynamic>? query,
+    Decoder<T>? decoder,
+    RetryPolicy? retryPolicy,
+    bool Function(int?)? retryCode,
+  }) {
+    return _retry(
+      () => super.get<T>(
+        url,
+        headers: headers,
+        contentType: contentType,
+        query: query,
+        decoder: decoder,
+      ),
+      retryPolicy: retryPolicy,
+      retryCode: retryCode,
+    );
+  }
+
+  @override
+  Future<Response<T>> post<T>(
+    String? url,
+    dynamic body, {
+    String? contentType,
+    Map<String, String>? headers,
+    Map<String, dynamic>? query,
+    Decoder<T>? decoder,
+    Progress? uploadProgress,
+    RetryPolicy? retryPolicy,
+    bool Function(int?)? retryCode,
+  }) {
+    return _retry(
+      () => super.post<T>(
+        url,
+        body,
+        headers: headers,
+        contentType: contentType,
+        query: query,
+        decoder: decoder,
+        uploadProgress: uploadProgress,
+      ),
+      retryPolicy: retryPolicy,
+      retryCode: retryCode,
+    );
+  }
+
+  @override
+  Future<Response<T>> put<T>(
+    String url,
+    dynamic body, {
+    String? contentType,
+    Map<String, String>? headers,
+    Map<String, dynamic>? query,
+    Decoder<T>? decoder,
+    Progress? uploadProgress,
+    RetryPolicy? retryPolicy,
+    bool Function(int?)? retryCode,
+  }) {
+    return _retry(
+      () => super.put<T>(
+        url,
+        body,
+        headers: headers,
+        contentType: contentType,
+        query: query,
+        decoder: decoder,
+        uploadProgress: uploadProgress,
+      ),
+      retryPolicy: retryPolicy,
+      retryCode: retryCode,
+    );
+  }
+
+  @override
+  Future<Response<T>> patch<T>(
+    String url,
+    dynamic body, {
+    String? contentType,
+    Map<String, String>? headers,
+    Map<String, dynamic>? query,
+    Decoder<T>? decoder,
+    Progress? uploadProgress,
+    RetryPolicy? retryPolicy,
+    bool Function(int?)? retryCode,
+  }) {
+    return _retry(
+      () => super.patch<T>(
+        url,
+        body,
+        headers: headers,
+        contentType: contentType,
+        query: query,
+        decoder: decoder,
+        uploadProgress: uploadProgress,
+      ),
+      retryPolicy: retryPolicy,
+      retryCode: retryCode,
+    );
+  }
+
+  @override
+  Future<Response<T>> request<T>(
+    String url,
+    String method, {
+    dynamic body,
+    String? contentType,
+    Map<String, String>? headers,
+    Map<String, dynamic>? query,
+    Decoder<T>? decoder,
+    Progress? uploadProgress,
+    RetryPolicy? retryPolicy,
+    bool Function(int?)? retryCode,
+  }) {
+    return _retry(
+      () => super.request<T>(
+        url,
+        method,
+        body: body,
+        headers: headers,
+        contentType: contentType,
+        query: query,
+        decoder: decoder,
+        uploadProgress: uploadProgress,
+      ),
+      retryPolicy: retryPolicy,
+      retryCode: retryCode,
+    );
+  }
+
+  @override
+  Future<Response<T>> delete<T>(
+    String url, {
+    Map<String, String>? headers,
+    String? contentType,
+    Map<String, dynamic>? query,
+    Decoder<T>? decoder,
+    RetryPolicy? retryPolicy,
+    bool Function(int?)? retryCode,
+  }) {
+    return _retry(
+      () => super.delete(
+        url,
+        headers: headers,
+        contentType: contentType,
+        query: query,
+        decoder: decoder,
+      ),
+      retryPolicy: retryPolicy,
+      retryCode: retryCode,
+    );
+  }
+}

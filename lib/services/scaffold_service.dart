@@ -11,15 +11,14 @@ class ScaffoldService {
   Function()? closeDelegate;
   bool Function()? isOpenDelegate;
 
-  static final ScaffoldService _instance = ScaffoldService._();
-
-  factory ScaffoldService() {
-    return _instance;
-  }
-
-  bool get isOpen => isOpenDelegate?.call() ?? false;
   final navCollapsed = false.obs;
   final layoutController = Dep.put(ScaffoldLayoutController(), permanent: true);
+
+  bool get isOpen => isOpenDelegate?.call() ?? false;
+
+  static final ScaffoldService _instance = ScaffoldService._();
+
+  factory ScaffoldService() => _instance;
 
   ScaffoldService._() {
     ever(navCollapsed, (bool value) {

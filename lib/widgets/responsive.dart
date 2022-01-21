@@ -18,6 +18,7 @@ class _ResponsiveState extends State<Responsive> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _responsiveService.screenChanged();
     WidgetsBinding.instance?.addObserver(this);
   }
 

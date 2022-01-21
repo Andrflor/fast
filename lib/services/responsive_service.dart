@@ -28,7 +28,6 @@ class ResponsiveService {
   static bool get willDisplayCollapsed =>
       Screen.width > 600 && Screen.height > 350 && Screen.isLarge;
 
-  final _navCollapsed = ScaffoldService().navCollapsed;
   final sizeObs = const Size(0, 0).obs;
   final diagonalInches = 0.0.obs;
 
@@ -70,6 +69,7 @@ class ResponsiveService {
   }
 
   void notifyMenu() {
+    final _navCollapsed = ScaffoldService().navCollapsed;
     if (menuAnimating) return;
     menuAnimating = true;
     final display = willDisplayCollapsed || willDisplayLarge;

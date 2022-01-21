@@ -30,13 +30,13 @@ class App extends StatelessWidget {
   /// If the function do not return or return null the default behavior is
   /// called, if the function return true the back will be called and if the
   /// fuction return false no pop will happen
-  final bool? Function()? onBack;
+  final Future<bool?> Function()? onBack;
 
   /// Triggered if back button or Nav.back should close the app (empty history)
   /// If the function do not return or return null the default behavior is
   /// called, if the function return true the back will be called and if the
   /// fuction return false no pop will happen
-  final bool? Function()? onExit;
+  final Future<bool?> Function()? onExit;
 
   App(
       {Key? key,

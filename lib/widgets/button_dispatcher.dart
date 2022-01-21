@@ -4,14 +4,14 @@ import '../statics/menu.dart';
 import '../statics/nav.dart';
 
 class ButtonDispatcher extends RootBackButtonDispatcher {
-  final bool? Function()? onBack;
-  final bool? Function()? onExit;
+  final Future<bool?> Function()? onBack;
+  final Future<bool?> Function()? onExit;
 
   ButtonDispatcher({this.onBack, this.onExit});
 
   @override
   Future<bool> didPopRoute() async {
-    final onBackResult = onBack?.call();
+    final onBackResult = await onBack?.call();
     if (onBackResult != null) {
       return onBackResult;
     }
@@ -22,7 +22,7 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
     }
 
     if (!(Nav.isAnyOverlay || await Nav.canPop())) {
-      final onExitResult = onExit?.call();
+      final onExitResult = await onExit?.call();
       if (onExitResult != null) {
         return onExitResult;
       }

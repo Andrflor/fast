@@ -1,7 +1,7 @@
-import '../statics/dep.dart';
+import 'package:fast/services/responsive_service.dart';
+
 import '../statics/menu.dart';
 import '../utils/typedef.dart';
-import 'responsive_service.dart';
 
 class ScaffoldLayoutController extends Controller {
   bool isDocked = Menu.isDocked;
@@ -9,7 +9,7 @@ class ScaffoldLayoutController extends Controller {
 
   @override
   void onInit() {
-    worker = ever(Dep.find<ResponsiveService>().displayMenu, (bool value) {
+    worker = ever(ResponsiveService().displayMenu, (bool value) {
       if (value != isDocked) {
         isDocked = value;
         update();

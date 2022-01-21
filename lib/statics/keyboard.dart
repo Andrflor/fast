@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../services/responsive_service.dart';
-import 'dep.dart';
 
 class Keyboard {
-  static RxBool visible = Dep.find<ResponsiveService>().keyboardVisible;
+  static RxBool visible = ResponsiveService().keyboardVisible;
   static bool get isVisible => visible.value;
   static bool closable = true;
 

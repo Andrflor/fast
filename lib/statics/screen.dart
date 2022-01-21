@@ -4,12 +4,11 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../services/responsive_service.dart';
-import 'dep.dart';
 import 'platform.dart';
 import 'menu.dart';
 
 class Screen {
-  static final _responsiveService = Dep.find<ResponsiveService>();
+  static final ResponsiveService _responsiveService = ResponsiveService();
 
   static double get height => _responsiveService.height;
   static double get width => _responsiveService.width;

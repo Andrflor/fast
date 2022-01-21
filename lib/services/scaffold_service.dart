@@ -1,35 +1,31 @@
+import 'package:fast/services/responsive_service.dart';
 import 'package:flutter/material.dart';
 
 import '../statics/dep.dart';
 import '../statics/menu.dart';
 import '../utils/typedef.dart';
-import 'responsive_service.dart';
 import 'scaffold_layout_controller.dart';
 
-class ScaffoldService extends Service {
+class ScaffoldService {
   Function()? openDelegate;
   Function()? closeDelegate;
   bool Function()? isOpenDelegate;
-  late final Worker worker;
+
+  static final ScaffoldService _instance = ScaffoldService._();
+
+  factory ScaffoldService() {
+    return _instance;
+  }
 
   bool get isOpen => isOpenDelegate?.call() ?? false;
   final navCollapsed = false.obs;
   final layoutController = Dep.put(ScaffoldLayoutController(), permanent: true);
 
-  @override
-  void onInit() {
-    final _responsiveService = Dep.find<ResponsiveService>();
-    worker = ever(navCollapsed, (bool value) {
-      _responsiveService.menuWidth.value =
+  ScaffoldService._() {
+    ever(navCollapsed, (bool value) {
+      ResponsiveService().menuWidth.value =
           value ? Menu.collapsedWidth : Menu.fullWidth;
     });
-    super.onInit();
-  }
-
-  @override
-  void onClose() {
-    worker.dispose();
-    super.onClose();
   }
 
   AppBar injectAppBar(AppBar appBar) {

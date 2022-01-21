@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../widgets/app.dart';
+import '../widgets/app.dart' show dispatcher;
 
 class Nav {
   static GetDelegate delegate = Get.rootDelegate;
@@ -51,13 +51,13 @@ class Nav {
     dynamic arguments,
     Map<String, String>? parameters,
   }) =>
-      delegate.toNamed(page, arguments: arguments, parameters: parameters);
+      delegate.toNamed<T>(page, arguments: arguments, parameters: parameters);
   static Future<T?>? off<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
   }) =>
-      delegate.offNamed(page, arguments: arguments, parameters: parameters);
+      delegate.offNamed<T>(page, arguments: arguments, parameters: parameters);
 
   static Future<T?>? offAll<T>(
     String page, {
@@ -65,6 +65,6 @@ class Nav {
     Map<String, String>? parameters,
   }) async {
     await clearHistory();
-    return off(page, arguments: arguments, parameters: parameters);
+    return off<T>(page, arguments: arguments, parameters: parameters);
   }
 }

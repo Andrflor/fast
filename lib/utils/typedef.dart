@@ -68,7 +68,7 @@ class TimedRetryPolicy extends RetryPolicy {
     Future.delayed(Duration(milliseconds: duration), () => locked = false);
     while (locked) {
       callResult = await callback();
-      isOk = retryCode(callResult.statusCode);
+      isOk = !retryCode(callResult.statusCode);
       if (isOk) {
         locked = false;
       } else {

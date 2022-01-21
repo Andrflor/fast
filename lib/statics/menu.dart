@@ -2,11 +2,10 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 import '../services/responsive_service.dart';
 import '../services/scaffold_service.dart';
-import 'dep.dart';
 
 class Menu {
-  static final _scaffoldService = Dep.find<ScaffoldService>();
-  static final _responsiveService = Dep.find<ResponsiveService>();
+  static final ScaffoldService _scaffoldService = ScaffoldService();
+  static final ResponsiveService _responsiveService = ResponsiveService();
 
   static void open() => _scaffoldService.openDelegate?.call();
   static void close() => _scaffoldService.closeDelegate?.call();

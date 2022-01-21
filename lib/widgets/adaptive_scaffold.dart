@@ -5,7 +5,7 @@ import '../services/scaffold_layout_controller.dart';
 import '../services/scaffold_service.dart';
 import '../utils/typedef.dart';
 
-class AdaptiveScaffold extends View<ScaffoldService> {
+class AdaptiveScaffold extends StatelessWidget {
   final bool extendBody;
   final bool extendBodyBehindAppBar;
   final PreferredSizeWidget? appBar;
@@ -31,6 +31,7 @@ class AdaptiveScaffold extends View<ScaffoldService> {
   final String? restorationId;
   final rebuild = false.obs;
   late final Key _key;
+  final _scaffoldService = ScaffoldService();
 
   AdaptiveScaffold({
     Key? key,
@@ -59,9 +60,9 @@ class AdaptiveScaffold extends View<ScaffoldService> {
     this.restorationId,
   }) : super(key: key) {
     _key = key ?? GlobalKey<ScaffoldState>();
-    controller.openDelegate = open;
-    controller.closeDelegate = close;
-    controller.isOpenDelegate = isDrawerOpen;
+    _scaffoldService.openDelegate = open;
+    _scaffoldService.closeDelegate = close;
+    _scaffoldService.isOpenDelegate = isDrawerOpen;
   }
 
   bool isDrawerOpen() =>
@@ -82,7 +83,7 @@ class AdaptiveScaffold extends View<ScaffoldService> {
   @override
   Widget build(BuildContext context) {
     return ObxBuilder<ScaffoldLayoutController>(
-      init: controller.layoutController,
+      init: _scaffoldService.layoutController,
       builder: (layout) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -91,7 +92,7 @@ class AdaptiveScaffold extends View<ScaffoldService> {
             child: Scaffold(
               key: _key,
               appBar: (appBar is AppBar)
-                  ? controller.injectAppBar((appBar as AppBar))
+                  ? _scaffoldService.injectAppBar((appBar as AppBar))
                   : appBar,
               body: body,
               floatingActionButton: floatingActionButton,

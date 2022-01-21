@@ -1,22 +1,26 @@
 import 'dart:math';
 
+import 'package:fast/services/scaffold_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../statics/dep.dart';
 import '../statics/keyboard.dart';
 import '../statics/menu.dart';
 import '../statics/platform.dart';
 import '../statics/screen.dart';
-import '../utils/typedef.dart';
-import 'scaffold_service.dart';
 
-class ResponsiveService extends Service {
+class ResponsiveService {
   bool get isKeyboardVisible => keyboardVisible.value;
 
   Size get size => sizeObs.value;
   double get width => size.width;
   double get height => size.height;
+
+  factory ResponsiveService() => _instance ??= ResponsiveService._();
+
+  ResponsiveService._();
+
+  static ResponsiveService? _instance;
 
   static bool get willDisplayLarge =>
       Screen.width > 1000 && Screen.height > 500 && Screen.isLarge;
@@ -30,17 +34,7 @@ class ResponsiveService extends Service {
   final menuWidth = 0.0.obs;
   final displayMenu = false.obs;
   final orientation = Orientation.portrait.obs;
-
-  late final ScaffoldService _scaffoldService;
-
-  bool menuAnimating = false;
-
-  @override
-  void onInit() {
-    screenChanged();
-    _scaffoldService = Dep.put(ScaffoldService());
-    super.onInit();
-  }
+  final menuAnimating = false.obs;
 
   void screenChanged() {
     if (Get.size != size) {
@@ -73,8 +67,8 @@ class ResponsiveService extends Service {
   }
 
   void notifyMenu() {
-    if (menuAnimating) return;
-    menuAnimating = true;
+    if (menuAnimating.value) return;
+    menuAnimating.value = true;
     final display = willDisplayCollapsed || willDisplayLarge;
     final dockerOpening = display && !Menu.isDocked;
     if (dockerOpening) {
@@ -82,13 +76,13 @@ class ResponsiveService extends Service {
       menuWidth.value = 0;
     }
     if (willDisplayLarge) {
-      _scaffoldService.navCollapsed.value = false;
+      ScaffoldService().navCollapsed.value = false;
       menuWidth.value = Menu.fullWidth;
     } else if (willDisplayCollapsed) {
       Future.delayed(
           Duration(milliseconds: dockerOpening ? Menu.animationDuration : 0),
           () {
-        _scaffoldService.navCollapsed.value = true;
+        ScaffoldService().navCollapsed.value = true;
         menuWidth.value = Menu.collapsedWidth;
       });
     } else if (!display) {
@@ -101,7 +95,7 @@ class ResponsiveService extends Service {
           () => displayMenu.value = display);
     }
     Future.delayed(Duration(milliseconds: Menu.animationDuration),
-        () => menuAnimating = false);
+        () => menuAnimating.value = false);
   }
 
   void notifyDiagonal() {

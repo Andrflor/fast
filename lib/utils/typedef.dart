@@ -12,6 +12,7 @@ export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 // Some syntaxic sugar
 typedef View<T> = GetView<T>;
+typedef ControlledWidget<T extends GetLifeCycleBase> = GetWidget<T>;
 typedef Controller = GetxController;
 typedef Service = GetxService;
 typedef Toast = GetSnackBar;

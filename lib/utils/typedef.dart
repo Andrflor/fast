@@ -36,6 +36,8 @@ mixin ScrollCapability on GetxController {
   void onInit() {
     super.onInit();
     scroll.addListener(_listener);
+    WidgetsBinding.instance?.addPostFrameCallback(
+        (_) => position.isScrollingNotifier.addListener(_valueListener));
   }
 
   bool _canFetchBottom = true;
@@ -58,11 +60,6 @@ mixin ScrollCapability on GetxController {
   ScrollPosition get position => scroll.position;
 
   double get initialScrollOffset => scroll.initialScrollOffset;
-
-  @nonVirtual
-  void attached() {
-    position.isScrollingNotifier.addListener(_valueListener);
-  }
 
   @nonVirtual
   void attach(ScrollPosition position) => scroll.attach(position);

@@ -13,6 +13,7 @@ export 'package:get/get_navigation/src/routes/transitions_type.dart';
 export 'package:get/get_rx/src/rx_types/rx_types.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+export 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 
 // Some syntaxic sugar
 typedef ControlledWidget<T extends GetLifeCycleBase> = GetWidget<T>;
@@ -56,7 +57,7 @@ abstract class Controller<T> extends GetxController with StateMixin<T> {
 
   @nonVirtual
   void error([String? error, T? state]) {
-    change(state, status: RxStatus.error(error));
+    change(state ?? this.state, status: RxStatus.error(error));
   }
 
   @nonVirtual

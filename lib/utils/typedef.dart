@@ -29,6 +29,10 @@ typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 
+void runAfterBuild(Function callback) {
+  WidgetsBinding.instance?.addPostFrameCallback((_) => callback());
+}
+
 mixin ScrollCapability on GetxController {
   final ScrollController scroll = ScrollController();
 
@@ -112,6 +116,14 @@ mixin ScrollCapability on GetxController {
 
 abstract class Controller<T> extends GetxController with StateMixin<T> {
   final List<Worker> _workers = <Worker>[];
+
+  @override
+  void onInit() {
+    runAfterBuild(afterBuild);
+    super.onInit();
+  }
+
+  void afterBuild() {}
 
   @nonVirtual
   void loading([T? state]) {

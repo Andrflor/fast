@@ -49,6 +49,29 @@ mixin ScrollCapability on GetxController {
     onScroll();
   }
 
+  double get offset => scroll.offset;
+
+  ScrollPosition get position => scroll.position;
+
+  double get initialScrollOffset => scroll.initialScrollOffset;
+
+  @nonVirtual
+  void attach(ScrollPosition position) => scroll.attach(position);
+
+  @nonVirtual
+  void detach(ScrollPosition position) => scroll.detach(position);
+
+  @nonVirtual
+  void jumpTo(double value) => scroll.jumpTo(value);
+
+  @nonVirtual
+  void animateTo(
+    double offset, {
+    required Duration duration,
+    required Curve curve,
+  }) =>
+      scroll.animateTo(offset, duration: duration, curve: curve);
+
   Future<void> _checkIfCanLoadMore() async {
     if (scroll.position.pixels == 0) {
       if (!_canFetchTop) return;
@@ -72,6 +95,7 @@ mixin ScrollCapability on GetxController {
   @override
   void onClose() {
     scroll.removeListener(_listener);
+    scroll.dispose();
     super.onClose();
   }
 }
@@ -216,7 +240,7 @@ abstract class View<T extends Controller> extends GetView<T> {
   get model => controller.state;
 
   @nonVirtual
-  String? get error => controller.status.errorMessage;
+  String get error => controller.status.errorMessage ?? '';
 
   Widget onSucces(BuildContext context) => const SizedBox.shrink();
 

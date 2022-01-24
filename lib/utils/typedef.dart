@@ -253,12 +253,11 @@ abstract class View<T extends Controller> extends GetView<T> {
 
   @nonVirtual
   // ignore: non_constant_identifier_names
-  Status(BuildContext context) {
-    controller.obx((_) => onSucces(context),
-        onError: (_) => onError(context),
-        onEmpty: onEmpty(context),
-        onLoading: onLoading(context));
-  }
+  Widget Status(BuildContext context) =>
+      controller.obx((_) => onSucces(context),
+          onError: (_) => onError(context),
+          onEmpty: onEmpty(context),
+          onLoading: onLoading(context));
 }
 
 /// Syntaxic sugar for Theme.of(context)

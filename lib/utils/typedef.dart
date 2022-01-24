@@ -29,12 +29,51 @@ typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 
-mixin ScrollCapability on ScrollMixin {
-  @override
-  Future<void> onEndScroll() async {}
+mixin ScrollCapability on GetxController {
+  final ScrollController scroll = ScrollController();
 
   @override
+  void onInit() {
+    super.onInit();
+    scroll.addListener(_listener);
+  }
+
+  bool _canFetchBottom = true;
+
+  bool _canFetchTop = true;
+
+  void _listener() {
+    if (scroll.position.atEdge) {
+      _checkIfCanLoadMore();
+    }
+    onScroll();
+  }
+
+  Future<void> _checkIfCanLoadMore() async {
+    if (scroll.position.pixels == 0) {
+      if (!_canFetchTop) return;
+      _canFetchTop = false;
+      await onTopScroll();
+      _canFetchTop = true;
+    } else {
+      if (!_canFetchBottom) return;
+      _canFetchBottom = false;
+      await onEndScroll();
+      _canFetchBottom = true;
+    }
+  }
+
+  Future<void> onEndScroll() async {}
+
   Future<void> onTopScroll() async {}
+
+  Future<void> onScroll() async {}
+
+  @override
+  void onClose() {
+    scroll.removeListener(_listener);
+    super.onClose();
+  }
 }
 
 abstract class Controller<T> extends GetxController with StateMixin<T> {

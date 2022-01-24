@@ -119,8 +119,8 @@ abstract class Controller<T> extends GetxController with StateMixin<T> {
 
   @override
   void onInit() {
-    runAfterBuild(afterBuild);
     super.onInit();
+    runAfterBuild(afterBuild);
   }
 
   void afterBuild() {}

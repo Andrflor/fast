@@ -13,7 +13,7 @@ export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 // Some syntaxic sugar
 typedef View<T> = GetView<T>;
 typedef ControlledWidget<T extends GetLifeCycleBase> = GetWidget<T>;
-typedef Controller = GetxController;
+typedef AppLifeCycleController = SuperController;
 typedef Service = GetxService;
 typedef Toast = GetSnackBar;
 typedef Utils = GetUtils;
@@ -21,8 +21,11 @@ typedef Middleware = GetMiddleware;
 typedef NavConfig = GetNavConfig;
 typedef NavPage = GetPage;
 typedef RouterOutlet = GetRouterOutlet;
-typedef ObxBuilder<T extends Controller> = GetBuilder<T>;
+typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
+typedef ScrollCapability = ScrollMixin;
+
+abstract class Controller<T> = GetxController with StateMixin<T>;
 
 /// Syntaxic sugar for Theme.of(context)
 // ignore: non_constant_identifier_names

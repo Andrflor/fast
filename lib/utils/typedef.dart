@@ -95,11 +95,11 @@ mixin ScrollCapability on GetxController {
 
   Future<void> onTopScroll() async {}
 
-  void onScroll();
+  void onScroll() {}
 
-  void onStartScroll();
+  void onStartScroll() {}
 
-  void onEndScroll();
+  void onEndScroll() {}
 
   @override
   void onClose() {

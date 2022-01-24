@@ -1,5 +1,4 @@
 import 'package:fast/utils/typedef.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../statics/design.dart';

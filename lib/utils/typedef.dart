@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:get/get.dart';
+
+import 'package:get/get.dart' hide ever, everAll, interval, debounce, once;
+
+import 'package:get/get.dart' as workerlib
+    show ever, everAll, interval, debounce, once;
 
 export 'package:get/get_connect/http/src/response/response.dart';
 export 'package:get/get_connect/http/src/status/http_status.dart';
 export 'package:get/get_instance/src/bindings_interface.dart';
 export 'package:get/get_navigation/src/routes/transitions_type.dart';
 export 'package:get/get_rx/src/rx_types/rx_types.dart';
-export 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
@@ -24,27 +27,145 @@ typedef NavPage = GetPage;
 typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
-typedef ScrollCapability = ScrollMixin;
+
+mixin ScrollCapability on ScrollMixin {
+  @override
+  Future<void> onEndScroll() async {}
+
+  @override
+  Future<void> onTopScroll() async {}
+}
 
 abstract class Controller<T> extends GetxController with StateMixin<T> {
+  final List<Worker> _workers = <Worker>[];
+
   @nonVirtual
-  loading([T? state]) {
+  void loading([T? state]) {
     change(state ?? this.state, status: RxStatus.loading());
   }
 
   @nonVirtual
-  empty([T? state]) {
+  void empty([T? state]) {
     change(state ?? this.state, status: RxStatus.empty());
   }
 
   @nonVirtual
-  success([T? state]) {
+  void success([T? state]) {
     change(state ?? this.state, status: RxStatus.success());
   }
 
   @nonVirtual
-  error([String? error, T? state]) {
+  void error([String? error, T? state]) {
     change(state, status: RxStatus.error(error));
+  }
+
+  @nonVirtual
+  Worker ever<T>(
+    RxInterface<T> listener,
+    WorkerCallback<T> callback, {
+    dynamic condition = true,
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    late final Worker worker;
+    worker = workerlib.ever<T>(listener, callback,
+        condition: condition, onError: onError, onDone: () {
+      _workers.remove(worker);
+      onDone?.call();
+    }, cancelOnError: cancelOnError);
+    _workers.add(worker);
+    return worker;
+  }
+
+  @nonVirtual
+  Worker everAll(
+    List<RxInterface> listeners,
+    WorkerCallback callback, {
+    dynamic condition = true,
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    late final Worker worker;
+    worker = workerlib.everAll(listeners, callback,
+        condition: condition, onError: onError, onDone: () {
+      _workers.remove(worker);
+      onDone?.call();
+    }, cancelOnError: cancelOnError);
+    _workers.add(worker);
+    return worker;
+  }
+
+  @nonVirtual
+  Worker once<T>(
+    RxInterface<T> listener,
+    WorkerCallback<T> callback, {
+    dynamic condition = true,
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    late final Worker worker;
+    worker = workerlib.once<T>(listener, callback,
+        condition: condition, onError: onError, onDone: () {
+      _workers.remove(worker);
+      onDone?.call();
+    }, cancelOnError: cancelOnError);
+    _workers.add(worker);
+    return worker;
+  }
+
+  @nonVirtual
+  Worker interval<T>(
+    RxInterface<T> listener,
+    WorkerCallback<T> callback, {
+    Duration time = const Duration(seconds: 1),
+    dynamic condition = true,
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    late final Worker worker;
+    worker = workerlib.interval<T>(listener, callback,
+        condition: condition, time: time, onError: onError, onDone: () {
+      _workers.remove(worker);
+      onDone?.call();
+    }, cancelOnError: cancelOnError);
+    _workers.add(worker);
+    return worker;
+  }
+
+  @nonVirtual
+  Worker debounce<T>(
+    RxInterface<T> listener,
+    WorkerCallback<T> callback, {
+    Duration? time,
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    late final Worker worker;
+    worker = workerlib.debounce<T>(listener, callback,
+        time: time, onError: onError, onDone: () {
+      _workers.remove(worker);
+      onDone?.call();
+    }, cancelOnError: cancelOnError);
+    _workers.add(worker);
+    return worker;
+  }
+
+  void disposeWorkers() {
+    for (var worker in _workers) {
+      worker.dispose();
+    }
+    _workers.clear();
+  }
+
+  @override
+  void onClose() {
+    disposeWorkers();
+    super.onClose();
   }
 }
 

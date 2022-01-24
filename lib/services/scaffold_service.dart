@@ -1,5 +1,6 @@
 import 'package:fast/services/responsive_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 
 import '../statics/dep.dart';
 import '../statics/menu.dart';

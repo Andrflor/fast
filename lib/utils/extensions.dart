@@ -16,28 +16,6 @@ extension WidgetExtensions<T extends GetLifeCycleBase?> on GetWidget<T> {
   T get c => controller;
 }
 
-extension ViewExtension<T extends Controller> on GetView<T> {
-  get model => c.state;
-  String? get error => c.status.errorMessage;
-
-  Widget onSucces(BuildContext context) => const SizedBox.shrink();
-
-  Widget onError(BuildContext context) => const SizedBox.shrink();
-
-  Widget onLoading(BuildContext context) =>
-      const Center(child: CircularProgressIndicator());
-
-  Widget onEmpty(BuildContext context) => const SizedBox.shrink();
-
-  // ignore: non_constant_identifier_names
-  Status(BuildContext context) {
-    c.obx((_) => onSucces(context),
-        onError: (_) => onError(context),
-        onEmpty: onEmpty(context),
-        onLoading: onLoading(context));
-  }
-}
-
 extension WidgetExtension<T extends Controller> on GetWidget<T> {}
 
 extension Plop on Type {}

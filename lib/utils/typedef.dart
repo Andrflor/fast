@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 import 'package:get/get.dart';
 
 export 'package:get/get_connect/http/src/response/response.dart';
@@ -11,7 +12,6 @@ export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 // Some syntaxic sugar
-typedef View<T> = GetView<T>;
 typedef ControlledWidget<T extends GetLifeCycleBase> = GetWidget<T>;
 typedef LifeCycleController = SuperController;
 typedef Service = GetxService;
@@ -26,7 +26,55 @@ typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 typedef ScrollCapability = ScrollMixin;
 
-abstract class Controller<T> = GetxController with StateMixin<T>;
+abstract class Controller<T> extends GetxController with StateMixin<T> {
+  @nonVirtual
+  loading([T? state]) {
+    change(state ?? this.state, status: RxStatus.loading());
+  }
+
+  @nonVirtual
+  empty([T? state]) {
+    change(state ?? this.state, status: RxStatus.empty());
+  }
+
+  @nonVirtual
+  success([T? state]) {
+    change(state ?? this.state, status: RxStatus.success());
+  }
+
+  @nonVirtual
+  error([String? error, T? state]) {
+    change(state, status: RxStatus.error(error));
+  }
+}
+
+abstract class View<T extends Controller> extends GetView<T> {
+  const View({Key? key}) : super(key: key);
+
+  @nonVirtual
+  get model => controller.state;
+
+  @nonVirtual
+  String? get error => controller.status.errorMessage;
+
+  Widget onSucces(BuildContext context) => const SizedBox.shrink();
+
+  Widget onError(BuildContext context) => const SizedBox.shrink();
+
+  Widget onLoading(BuildContext context) =>
+      const Center(child: CircularProgressIndicator());
+
+  Widget onEmpty(BuildContext context) => const SizedBox.shrink();
+
+  @nonVirtual
+  // ignore: non_constant_identifier_names
+  Status(BuildContext context) {
+    controller.obx((_) => onSucces(context),
+        onError: (_) => onError(context),
+        onEmpty: onEmpty(context),
+        onLoading: onLoading(context));
+  }
+}
 
 /// Syntaxic sugar for Theme.of(context)
 // ignore: non_constant_identifier_names

@@ -34,7 +34,7 @@ void runAfterBuild(Function callback) {
 }
 
 mixin ScrollCapability on GetxController {
-  final ScrollController scroll = ScrollController();
+  final ScrollController scroll = ScrollController(keepScrollOffset: false);
 
   @override
   void onInit() {

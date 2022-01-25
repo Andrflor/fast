@@ -92,7 +92,7 @@ mixin ScrollCapability on GetxController {
   @nonVirtual
   void jumpTo(double value) {
     if (hasClients) {
-      jumpTo(value);
+      scroll.jumpTo(value);
     }
   }
 

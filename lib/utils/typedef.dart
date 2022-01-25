@@ -44,6 +44,11 @@ mixin ScrollCapability on GetxController {
         (_) => position.isScrollingNotifier.addListener(_valueListener));
   }
 
+  RxBool scrolling = false.obs;
+
+  bool get isScrolling => scrolling.value;
+  set isScrolling(bool value) => scrolling.value = value;
+
   bool _canFetchBottom = true;
 
   bool _canFetchTop = true;
@@ -57,6 +62,7 @@ mixin ScrollCapability on GetxController {
 
   void _valueListener() {
     position.isScrollingNotifier.value ? onStartScroll() : onEndScroll();
+    isScrolling = position.isScrollingNotifier.value;
   }
 
   double get offset => scroll.offset;
@@ -64,6 +70,8 @@ mixin ScrollCapability on GetxController {
   ScrollPosition get position => scroll.position;
 
   double get initialScrollOffset => scroll.initialScrollOffset;
+
+  bool get hasClients => scroll.hasClients;
 
   @nonVirtual
   void attach(ScrollPosition position) => scroll.attach(position);
@@ -75,12 +83,15 @@ mixin ScrollCapability on GetxController {
   void jumpTo(double value) => scroll.jumpTo(value);
 
   @nonVirtual
-  void animateTo(
+  Future<void> animateTo(
     double offset, {
     required Duration duration,
     required Curve curve,
-  }) =>
-      scroll.animateTo(offset, duration: duration, curve: curve);
+  }) async {
+    if (!isScrolling && hasClients) {
+      await scroll.animateTo(offset, duration: duration, curve: curve);
+    }
+  }
 
   Future<void> _checkIfCanLoadMore() async {
     if (position.pixels == 0) {

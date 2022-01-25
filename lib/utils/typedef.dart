@@ -166,6 +166,8 @@ mixin WidgetAware<T extends Widget> on GetLifeCycleBase {
   T? _widget;
 
   void onBuild() {}
+
+  void afterBuild() {}
 }
 
 class _GetCache<S extends WidgetAware?> extends WidgetCache<GetWidget<S>> {
@@ -203,8 +205,11 @@ class _GetCache<S extends WidgetAware?> extends WidgetCache<GetWidget<S>> {
 
   @override
   Widget build(BuildContext context) {
-    _controller?._context = context;
-    _controller?.onBuild();
+    if (_controller != null) {
+      _controller!._context = context;
+      _controller!.onBuild();
+      runAfterBuild(_controller!.afterBuild);
+    }
     return widget!.build(context);
   }
 }

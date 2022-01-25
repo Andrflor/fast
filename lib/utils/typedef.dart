@@ -158,12 +158,12 @@ abstract class GetWidget<S extends WidgetAware?> extends GetWidgetCache {
   WidgetCache createWidgetCache() => _GetCache<S>();
 }
 
-mixin WidgetAware on GetLifeCycleBase {
+mixin WidgetAware<T extends Widget> on GetLifeCycleBase {
   BuildContext? get context => _context;
   BuildContext? _context;
 
-  Widget? get widget => _widget;
-  Widget? _widget;
+  T? get widget => _widget;
+  T? _widget;
 
   void onBuild() {}
 }

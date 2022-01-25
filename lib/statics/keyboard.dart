@@ -9,8 +9,8 @@ class Keyboard {
   static RxBool visible = _responsiveService.keyboardVisible;
   static bool get isVisible => visible.value;
 
-  static RxDouble heightObs = _responsiveService.keyboardHeight;
-  static double get height => heightObs.value;
+  static RxDouble heightChanged = _responsiveService.keyboardHeight;
+  static double get height => heightChanged.value;
 
   static bool closable = true;
 

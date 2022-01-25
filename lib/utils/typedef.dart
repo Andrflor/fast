@@ -1,3 +1,4 @@
+import 'package:fast/statics/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_widget_cache.dart';
 import 'package:meta/meta.dart';
@@ -33,14 +34,12 @@ typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 
-final ResponsiveService _responsiveService = ResponsiveService();
-
 void runAfterBuild(Function callback) {
   WidgetsBinding.instance?.addPostFrameCallback((_) => callback());
 }
 
 Worker runOnResize(WorkerCallback<Size> callback) {
-  return workerlib.ever(_responsiveService.sizeObs, callback);
+  return workerlib.ever(Screen.sizeChanged, callback);
 }
 
 mixin ScrollCapability on GetxController {
@@ -340,7 +339,7 @@ mixin WindowResizeListener on AutoDispose {
 
   @nonVirtual
   Worker runOnResize(WorkerCallback<Size> callback) {
-    return ever(_responsiveService.sizeObs, callback);
+    return ever(Screen.sizeChanged, callback);
   }
 }
 

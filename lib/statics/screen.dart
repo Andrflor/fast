@@ -15,6 +15,7 @@ class Screen {
   static double get viewWidth => width - Menu.width;
 
   static Size get size => _responsiveService.size;
+  static Rx<Size> get sizeChanged => _responsiveService.sizeChanged;
 
   static double get min => math.min(width, height);
   static double get max => math.max(width, height);

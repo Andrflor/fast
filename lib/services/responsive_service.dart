@@ -12,7 +12,7 @@ import 'scaffold_service.dart';
 class ResponsiveService {
   bool get isKeyboardVisible => keyboardVisible.value;
 
-  Size get size => sizeObs.value;
+  Size get size => sizeChanged.value;
   double get width => size.width;
   double get height => size.height;
 
@@ -28,7 +28,7 @@ class ResponsiveService {
   static bool get willDisplayCollapsed =>
       Screen.width > 600 && Screen.height > 350 && Screen.isLarge;
 
-  final sizeObs = const Size(0, 0).obs;
+  final sizeChanged = const Size(0, 0).obs;
   final diagonalInches = 0.0.obs;
 
   final keyboardHeight = 0.0.obs;
@@ -41,7 +41,7 @@ class ResponsiveService {
 
   void screenChanged() {
     if (Get.size != size) {
-      sizeObs.value = Get.size;
+      sizeChanged.value = Get.size;
       notify();
     }
   }

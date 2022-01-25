@@ -6,6 +6,8 @@ import 'package:get/get.dart' hide ever, everAll, interval, debounce, once;
 import 'package:get/get.dart' as workerlib
     show ever, everAll, interval, debounce, once;
 
+import '../services/responsive_service.dart';
+
 export 'package:get/get_connect/http/src/response/response.dart';
 export 'package:get/get_connect/http/src/status/http_status.dart';
 export 'package:get/get_instance/src/bindings_interface.dart';
@@ -29,8 +31,14 @@ typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 
+final ResponsiveService _responsiveService = ResponsiveService();
+
 void runAfterBuild(Function callback) {
   WidgetsBinding.instance?.addPostFrameCallback((_) => callback());
+}
+
+Worker runOnResize(WorkerCallback<Size> callback) {
+  return workerlib.ever(_responsiveService.sizeObs, callback);
 }
 
 mixin ScrollCapability on GetxController {
@@ -132,9 +140,12 @@ abstract class Controller<T> extends GetxController with StateMixin<T> {
   void onInit() {
     super.onInit();
     runAfterBuild(afterBuild);
+    runOnResize(onRisize);
   }
 
   void afterBuild() {}
+
+  void onRisize(Size windowSize) {}
 
   @nonVirtual
   void loading([T? state]) {
@@ -154,6 +165,11 @@ abstract class Controller<T> extends GetxController with StateMixin<T> {
   @nonVirtual
   void error([String? error, T? state]) {
     change(state ?? this.state, status: RxStatus.error(error));
+  }
+
+  @nonVirtual
+  Worker runOnResize(WorkerCallback<Size> callback) {
+    return ever(_responsiveService.sizeObs, callback);
   }
 
   @nonVirtual

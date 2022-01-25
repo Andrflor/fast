@@ -140,12 +140,12 @@ abstract class Controller<T> extends GetxController with StateMixin<T> {
   void onInit() {
     super.onInit();
     runAfterBuild(afterBuild);
-    runOnResize(onRisize);
+    runOnResize(onResize);
   }
 
   void afterBuild() {}
 
-  void onRisize(Size windowSize) {}
+  void onResize(Size windowSize) {}
 
   @nonVirtual
   void loading([T? state]) {

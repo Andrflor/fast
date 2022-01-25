@@ -133,44 +133,8 @@ mixin ScrollCapability on GetxController {
   }
 }
 
-abstract class Controller<T> extends GetxController with StateMixin<T> {
+mixin AutoDispose on GetLifeCycleBase {
   final List<Worker> _workers = <Worker>[];
-
-  @override
-  void onInit() {
-    super.onInit();
-    runAfterBuild(afterBuild);
-    runOnResize(onResize);
-  }
-
-  void afterBuild() {}
-
-  void onResize(Size windowSize) {}
-
-  @nonVirtual
-  void loading([T? state]) {
-    change(state ?? this.state, status: RxStatus.loading());
-  }
-
-  @nonVirtual
-  void empty([T? state]) {
-    change(state ?? this.state, status: RxStatus.empty());
-  }
-
-  @nonVirtual
-  void success([T? state]) {
-    change(state ?? this.state, status: RxStatus.success());
-  }
-
-  @nonVirtual
-  void error([String? error, T? state]) {
-    change(state ?? this.state, status: RxStatus.error(error));
-  }
-
-  @nonVirtual
-  Worker runOnResize(WorkerCallback<Size> callback) {
-    return ever(_responsiveService.sizeObs, callback);
-  }
 
   @nonVirtual
   Worker ever<T>(
@@ -276,11 +240,52 @@ abstract class Controller<T> extends GetxController with StateMixin<T> {
   }
 
   @override
+  @mustCallSuper
   void onClose() {
     disposeWorkers();
     super.onClose();
   }
 }
+
+mixin WindowResizeListener on AutoDispose {
+  @override
+  void onInit() {
+    super.onInit();
+    runOnResize(onResize);
+  }
+
+  void onResize(Size windowSize) {}
+
+  @nonVirtual
+  Worker runOnResize(WorkerCallback<Size> callback) {
+    return ever(_responsiveService.sizeObs, callback);
+  }
+}
+
+mixin SimpleState<T> on StateMixin<T> {
+  @nonVirtual
+  void loading([T? state]) {
+    change(state ?? this.state, status: RxStatus.loading());
+  }
+
+  @nonVirtual
+  void empty([T? state]) {
+    change(state ?? this.state, status: RxStatus.empty());
+  }
+
+  @nonVirtual
+  void success([T? state]) {
+    change(state ?? this.state, status: RxStatus.success());
+  }
+
+  @nonVirtual
+  void error([String? error, T? state]) {
+    change(state ?? this.state, status: RxStatus.error(error));
+  }
+}
+
+abstract class Controller<T> = GetxController
+    with StateMixin<T>, SimpleState<T>, AutoDispose;
 
 abstract class View<T extends Controller> extends GetView<T> {
   const View({Key? key}) : super(key: key);

@@ -44,10 +44,13 @@ Worker runOnResize(WorkerCallback<Size> callback) {
 }
 
 mixin ScrollCapability on GetxController {
-  final ScrollController scroll = ScrollController(keepScrollOffset: false);
+  late final ScrollController scroll;
+
+  double get initialOffset;
 
   @override
   void onInit() {
+    ScrollController(initialScrollOffset: initialOffset);
     super.onInit();
     scroll.addListener(_listener);
     WidgetsBinding.instance?.addPostFrameCallback(

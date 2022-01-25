@@ -31,6 +31,7 @@ class ResponsiveService {
   final sizeObs = const Size(0, 0).obs;
   final diagonalInches = 0.0.obs;
 
+  final keyboardHeight = 0.0.obs;
   final keyboardVisible = false.obs;
   final menuWidth = 0.0.obs;
   final displayMenu = false.obs;
@@ -47,6 +48,7 @@ class ResponsiveService {
 
   void handleKeyboard() {
     if (Platform.hasKeyboard) {
+      keyboardHeight.value = Get.window.viewInsets.bottom;
       final keyboardVisible = Get.window.viewInsets.bottom != 0;
       if (isKeyboardVisible != keyboardVisible) {
         isKeyboardVisible = keyboardVisible;

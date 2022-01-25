@@ -4,8 +4,14 @@ import 'package:get/get.dart';
 import '../services/responsive_service.dart';
 
 class Keyboard {
-  static RxBool visible = ResponsiveService().keyboardVisible;
+  static final ResponsiveService _responsiveService = ResponsiveService();
+
+  static RxBool visible = _responsiveService.keyboardVisible;
   static bool get isVisible => visible.value;
+
+  static RxDouble heightObs = _responsiveService.keyboardHeight;
+  static double get height => heightObs.value;
+
   static bool closable = true;
 
   static Future<void> close() async {

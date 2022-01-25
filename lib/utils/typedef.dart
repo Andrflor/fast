@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_state_manager/src/simple/get_widget_cache.dart';
 import 'package:meta/meta.dart';
 
-import 'package:get/get.dart' hide ever, everAll, interval, debounce, once;
+import 'package:get/get.dart'
+    hide ever, everAll, interval, debounce, once, GetWidget;
 
 import 'package:get/get.dart' as workerlib
     show ever, everAll, interval, debounce, once;
@@ -18,7 +20,7 @@ export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 export 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 
 // Some syntaxic sugar
-typedef ControlledWidget<T extends GetLifeCycleBase> = GetWidget<T>;
+typedef ControlledWidget<T extends WidgetAware> = GetWidget<T>;
 typedef LifeCycleController = SuperController;
 typedef Service = GetxService;
 typedef BareController = RxController;
@@ -88,7 +90,11 @@ mixin ScrollCapability on GetxController {
   void detach(ScrollPosition position) => scroll.detach(position);
 
   @nonVirtual
-  void jumpTo(double value) => scroll.jumpTo(value);
+  void jumpTo(double value) {
+    if (hasClients) {
+      jumpTo(value);
+    }
+  }
 
   @nonVirtual
   Future<void> animateTo(
@@ -130,6 +136,76 @@ mixin ScrollCapability on GetxController {
     scroll.removeListener(_listener);
     scroll.dispose();
     super.onClose();
+  }
+}
+
+abstract class GetWidget<S extends WidgetAware?> extends GetWidgetCache {
+  const GetWidget({Key? key}) : super(key: key);
+
+  @protected
+  final String? tag = null;
+
+  S get controller => GetWidget._cache[this] as S;
+
+  S get c => controller;
+
+  static final _cache = Expando<WidgetAware>();
+
+  @protected
+  Widget build(BuildContext context);
+
+  @override
+  WidgetCache createWidgetCache() => _GetCache<S>();
+}
+
+mixin WidgetAware on GetLifeCycleBase {
+  BuildContext? get context => _context;
+  BuildContext? _context;
+
+  Widget? get widget => _widget;
+  Widget? _widget;
+
+  void onBuild() {}
+}
+
+class _GetCache<S extends WidgetAware?> extends WidgetCache<GetWidget<S>> {
+  S? _controller;
+  bool _isCreator = false;
+  InstanceInfo? info;
+  @override
+  void onInit() {
+    info = GetInstance().getInstanceInfo<S>(tag: widget!.tag);
+
+    _isCreator = info!.isPrepared && info!.isCreate;
+
+    if (info!.isRegistered) {
+      _controller = Get.find<S>(tag: widget!.tag);
+    }
+    _controller?._widget = widget;
+
+    GetWidget._cache[widget!] = _controller;
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    if (_isCreator) {
+      Get.asap(() {
+        widget!.controller!.onDelete();
+        Get.log('"${widget!.controller.runtimeType}" onClose() called');
+        Get.log('"${widget!.controller.runtimeType}" deleted from memory');
+        GetWidget._cache[widget!] = null;
+      });
+    }
+    info = null;
+    super.onClose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _controller?._context = context;
+    _controller?.onBuild();
+    return widget!.build(context);
   }
 }
 
@@ -254,6 +330,7 @@ mixin WindowResizeListener on AutoDispose {
     runOnResize(onResize);
   }
 
+  // Would be incredible to get view size instead
   void onResize(Size windowSize) {}
 
   @nonVirtual
@@ -285,7 +362,7 @@ mixin SimpleState<T> on StateMixin<T> {
 }
 
 abstract class Controller<T> = GetxController
-    with StateMixin<T>, SimpleState<T>, AutoDispose;
+    with StateMixin<T>, SimpleState<T>, AutoDispose, WidgetAware;
 
 abstract class View<T extends Controller> extends GetView<T> {
   const View({Key? key}) : super(key: key);

@@ -1,4 +1,3 @@
-import 'package:fast/utils/typedef.dart';
 import 'package:get/get.dart';
 
 import '../statics/design.dart';
@@ -10,12 +9,6 @@ export 'package:get/get_utils/src/extensions/context_extensions.dart';
 extension ViewExtensions<T> on GetView<T> {
   T get c => controller;
 }
-
-extension WidgetExtensions<T extends GetLifeCycleBase?> on GetWidget<T> {
-  T get c => controller;
-}
-
-extension WidgetExtension<T extends Controller> on GetWidget<T> {}
 
 extension Plop on Type {}
 

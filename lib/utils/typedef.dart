@@ -344,22 +344,22 @@ mixin WindowResizeListener on AutoDispose {
 }
 
 mixin SimpleState<T> on StateMixin<T> {
-  @nonVirtual
+  @mustCallSuper
   void loading([T? state]) {
     change(state ?? this.state, status: RxStatus.loading());
   }
 
-  @nonVirtual
+  @mustCallSuper
   void empty([T? state]) {
     change(state ?? this.state, status: RxStatus.empty());
   }
 
-  @nonVirtual
+  @mustCallSuper
   void success([T? state]) {
     change(state ?? this.state, status: RxStatus.success());
   }
 
-  @nonVirtual
+  @mustCallSuper
   void error([String? error, T? state]) {
     change(state ?? this.state, status: RxStatus.error(error));
   }

@@ -366,7 +366,7 @@ mixin SimpleState<T> on StateMixin<T> {
 }
 
 abstract class Controller<T> = GetxController
-    with StateMixin<T>, SimpleState<T>, AutoDispose, WidgetAware;
+    with StateMixin<T>, SimpleState<T>, AutoDispose, WidgetAware, AsyncInit;
 
 mixin AsyncInit on GetLifeCycleBase {
   final _completer = Completer<void>();

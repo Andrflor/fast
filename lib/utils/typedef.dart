@@ -370,7 +370,7 @@ abstract class Controller<T> = GetxController
 
 mixin AsyncInit on GetLifeCycleBase {
   final _completer = Completer<void>();
-  void get asyncInitDone async => await _completer.future;
+  Future<void> get asyncInitDone => _completer.future;
 
   @mustCallSuper
   @override

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fast/statics/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_widget_cache.dart';
@@ -8,8 +10,6 @@ import 'package:get/get.dart'
 
 import 'package:get/get.dart' as workerlib
     show ever, everAll, interval, debounce, once;
-
-import '../services/responsive_service.dart';
 
 export 'package:get/get_connect/http/src/response/response.dart';
 export 'package:get/get_connect/http/src/status/http_status.dart';
@@ -367,6 +367,18 @@ mixin SimpleState<T> on StateMixin<T> {
 
 abstract class Controller<T> = GetxController
     with StateMixin<T>, SimpleState<T>, AutoDispose, WidgetAware;
+
+mixin AsyncInit on GetLifeCycleBase {
+  final _completer = Completer<void>();
+  void get asyncInitDone async => await _completer.future;
+
+  @mustCallSuper
+  @override
+  void onInit() {
+    super.onInit();
+    _completer.complete();
+  }
+}
 
 abstract class View<T extends Controller> extends GetView<T> {
   const View({Key? key}) : super(key: key);

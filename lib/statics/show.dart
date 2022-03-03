@@ -136,8 +136,8 @@ class Show {
       await Show.dialog<T>(
           Dialog(
             child: SizedBox(
-              height: 200,
-              width: content == null ? 110 : 200,
+              width: 200,
+              height: content == null ? 110 : 200,
               child: Scaffold(
                 appBar: AppBar(
                   leadingWidth: 0,

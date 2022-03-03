@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../widgets/app.dart' show dispatcher;
@@ -14,6 +15,8 @@ class Nav {
   static bool isCurrent(String route) => current.contains(route);
   static Future<bool> back() async => await dispatcher.didPopRoute();
   static Future<bool> canPop() async => await delegate.canPopHistory();
+
+  static BuildContext? get context => Get.context;
 
   static final hasBottomSheet = false.obs;
   static final hasDialog = false.obs;

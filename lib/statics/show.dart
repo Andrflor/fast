@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -114,6 +115,74 @@ class Show {
     _overlaysCount(false);
     return result;
   }
+
+  static Future<T?> modal<T>({
+    required String title,
+    Widget? content,
+    String processText = "Ok",
+    String preventText = "Annuler",
+    Function()? processAction,
+    Function() preventAction = Nav.back,
+    bool barrierDismissible = true,
+    Color? barrierColor,
+    bool useSafeArea = true,
+    GlobalKey<NavigatorState>? navigatorKey,
+    Object? arguments,
+    Duration? transitionDuration,
+    Curve? transitionCurve,
+    String? name,
+    RouteSettings? routeSettings,
+  }) async =>
+      await Show.dialog<T>(
+          Dialog(
+            child: SizedBox(
+              height: 200,
+              width: content == null ? 110 : 200,
+              child: Scaffold(
+                appBar: AppBar(
+                  leadingWidth: 0,
+                  leading: Container(),
+                  title: AutoSizeText(
+                    title,
+                    maxLines: 1,
+                  ),
+                ),
+                body: Material(
+                  elevation: 8,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (content != null)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, bottom: 10, top: 0),
+                          child: SizedBox(height: 45, child: content),
+                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                              onPressed: preventAction,
+                              child: Text(preventText)),
+                          ElevatedButton(
+                              onPressed: processAction,
+                              child: Text(processText)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          barrierDismissible: barrierDismissible,
+          barrierColor: barrierColor,
+          useSafeArea: useSafeArea,
+          navigatorKey: navigatorKey,
+          arguments: arguments,
+          transitionCurve: transitionCurve,
+          name: name,
+          routeSettings: routeSettings);
 
   static Future<T?> dialog<T>(
     Widget widget, {

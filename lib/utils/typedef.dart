@@ -34,6 +34,16 @@ typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 
+class Instantiator {
+  static final _internal = <Type, Function>{};
+  static T instantiate<T>() => _internal[T]?.call();
+
+  static void register<T>(T Function() callback) => _internal[T] = callback;
+}
+
+Future<void> sleep(int milliseconds) async =>
+    await Future.delayed(Duration(milliseconds: milliseconds));
+
 void runAfterBuild(Function callback) {
   WidgetsBinding.instance?.addPostFrameCallback((_) => callback());
 }

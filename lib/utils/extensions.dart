@@ -10,8 +10,6 @@ extension ViewExtensions<T> on GetView<T> {
   T get c => controller;
 }
 
-extension Plop on Type {}
-
 extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1)}' : '';

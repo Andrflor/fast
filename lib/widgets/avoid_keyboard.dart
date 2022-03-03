@@ -88,7 +88,6 @@ class _AvoidKeyboardState extends State<AvoidKeyboard> {
       setState(() {
         _offset += overlap;
         _scroll.jumpTo(_offset);
-        print(_offset);
         _hasFocus = true;
       });
     }

@@ -19,6 +19,7 @@ class App extends StatelessWidget {
   final List<Locale>? locales;
   final ThemeData? lightTheme;
   final ThemeData? darkTheme;
+  final bool debugBanner;
 
   /// Use system default if darkMode is null
   final bool useSystemThemeMode;
@@ -48,6 +49,7 @@ class App extends StatelessWidget {
       this.onExit,
       this.lightTheme,
       this.darkMode,
+      this.debugBanner = false,
       this.locales,
       this.useSystemThemeMode = true,
       this.darkTheme})
@@ -66,6 +68,7 @@ class App extends StatelessWidget {
       supportedLocales: locales ?? [],
       backButtonDispatcher: dispatcher,
       scrollBehavior: MouseDragScrollBehavior(),
+      debugShowCheckedModeBanner: debugBanner,
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: darkMode?.call() == null && useSystemThemeMode

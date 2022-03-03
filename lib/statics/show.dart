@@ -87,6 +87,19 @@ class Show {
     return result;
   }
 
+  static Future<T> loading<T>({
+    required Future<T> Function() asyncFunction,
+    Color opacityColor = Colors.black,
+    Widget loadingWidget = const Center(child: CircularProgressIndicator()),
+    double opacity = .5,
+  }) async =>
+      await overlay<T>(
+        asyncFunction: asyncFunction,
+        loadingWidget: loadingWidget,
+        opacityColor: opacityColor,
+        opacity: opacity,
+      );
+
   static Future<T> overlay<T>({
     required Future<T> Function() asyncFunction,
     Color opacityColor = Colors.black,

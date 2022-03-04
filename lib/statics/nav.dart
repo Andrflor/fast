@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../widgets/app.dart' show dispatcher;
+import '../utils/typedef.dart' show sleep;
 
 class Nav {
   static GetDelegate delegate = Get.rootDelegate;
@@ -16,7 +17,13 @@ class Nav {
   static Future<bool> back() async => await dispatcher.didPopRoute();
   static Future<bool> canPop() async => await delegate.canPopHistory();
 
-  static BuildContext? get context => Get.context;
+  static BuildContext get context => Get.context!;
+
+  static Future<void> loaded() async {
+    while (Get.context == null) {
+      await sleep(50);
+    }
+  }
 
   static final hasBottomSheet = false.obs;
   static final hasDialog = false.obs;

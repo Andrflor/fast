@@ -34,6 +34,17 @@ typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
 
+extension NullOperand on num? {
+  operator +(num? n) =>
+      this == null && n == null ? null : (n ?? 0) + (this ?? 0);
+
+  operator *(num? n) =>
+      this == null && n == null ? null : (n ?? 0) * (this ?? 0);
+
+  operator /(num? n) =>
+      this == null && n == null ? null : (this ?? 0) / (n ?? 1);
+}
+
 class Instantiator {
   static final _internal = <Type, Function>{};
   static T instantiate<T>() => _internal[T]?.call();

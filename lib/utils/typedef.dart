@@ -384,6 +384,8 @@ mixin SimpleState<T> on StateMixin<T> {
   void error([String? error, T? state]) {
     change(state ?? this.state, status: RxStatus.error(error));
   }
+
+  Type get type => T;
 }
 
 abstract class Controller<T> = GetxController
@@ -401,11 +403,11 @@ mixin AsyncInit on GetLifeCycleBase {
   }
 }
 
-abstract class View<T extends Controller> extends GetView<T> {
+abstract class View<T extends Controller<S>, S> extends GetView<T> {
   const View({Key? key}) : super(key: key);
 
   @nonVirtual
-  get model => controller.state;
+  S? get model => controller.state;
 
   @nonVirtual
   String get error => controller.status.errorMessage ?? '';

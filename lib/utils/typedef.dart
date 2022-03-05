@@ -385,7 +385,7 @@ mixin SimpleState<T> on StateMixin<T> {
     change(state ?? this.state, status: RxStatus.error(error));
   }
 
-  T? get model => value;
+  T get model => value!;
 }
 
 abstract class Controller<T> = GetxController

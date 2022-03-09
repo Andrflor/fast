@@ -13,6 +13,20 @@ class Show {
 
   static SnackbarController snackBar(Toast toast) => Get.showSnackbar(toast);
 
+  static SnackbarController confirmSnack({
+    required bool isOk,
+    required String success,
+    required String error,
+  }) =>
+      snackBar(
+        Toast(
+          backgroundColor: isOk ? Colors.green : Colors.red,
+          message: isOk ? success : error,
+          duration: Duration(milliseconds: isOk ? 2000 : 4000),
+          isDismissible: false,
+        ),
+      );
+
   static void _bottomSheetCount(bool isOpening) {
     if (isOpening) {
       _bottomSheets++;

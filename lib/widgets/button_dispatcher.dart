@@ -12,6 +12,9 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
   @override
   Future<bool> didPopRoute() async {
     Nav.onBack();
+    if (!Nav.canBack() && !Nav.isDialog) {
+      return true;
+    }
 
     final onBackResult = await onBack?.call();
     if (onBackResult != null) {

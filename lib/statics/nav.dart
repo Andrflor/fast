@@ -32,6 +32,7 @@ class Nav {
   static final hasOverlay = false.obs;
   static final hasDatePicker = false.obs;
   static final onBack = obs;
+  static var canBack = true.obs;
 
   static bool get isSnackbar => Get.isSnackbarOpen;
 

@@ -149,41 +149,46 @@ class Show {
   }) async =>
       await Show.dialog<T>(
           Dialog(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
             child: SizedBox(
               width: 200,
               height: content == null ? 110 : 200,
-              child: Scaffold(
-                appBar: AppBar(
-                  leadingWidth: 0,
-                  leading: Container(),
-                  title: AutoSizeText(
-                    title,
-                    maxLines: 1,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                child: Scaffold(
+                  appBar: AppBar(
+                    leadingWidth: 0,
+                    leading: Container(),
+                    title: AutoSizeText(
+                      title,
+                      maxLines: 1,
+                    ),
                   ),
-                ),
-                body: Material(
-                  elevation: 8,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (content != null)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20.0, right: 20.0, bottom: 10, top: 0),
-                          child: SizedBox(height: 45, child: content),
+                  body: Material(
+                    elevation: 8,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        if (content != null)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20.0, right: 20.0, bottom: 10, top: 0),
+                            child: SizedBox(height: 45, child: content),
+                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                                onPressed: preventAction,
+                                child: Text(preventText)),
+                            ElevatedButton(
+                                onPressed: processAction,
+                                child: Text(processText)),
+                          ],
                         ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton(
-                              onPressed: preventAction,
-                              child: Text(preventText)),
-                          ElevatedButton(
-                              onPressed: processAction,
-                              child: Text(processText)),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

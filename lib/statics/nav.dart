@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../widgets/app.dart' show dispatcher;
-import '../utils/typedef.dart' show sleep;
+import '../utils/typedef.dart' show sleep, obs;
 
 class Nav {
   static GetDelegate delegate = Get.rootDelegate;
@@ -31,6 +31,7 @@ class Nav {
   static final hasDialog = false.obs;
   static final hasOverlay = false.obs;
   static final hasDatePicker = false.obs;
+  static final onBack = obs;
 
   static bool get isSnackbar => Get.isSnackbarOpen;
 

@@ -18,12 +18,10 @@ export 'package:get/get_navigation/src/routes/transitions_type.dart';
 export 'package:get/get_rx/src/rx_types/rx_types.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-export 'package:get/get_rx/src/rx_workers/rx_workers.dart';
 
 // Some syntaxic sugar
 typedef ControlledWidget<T extends WidgetAware> = GetWidget<T>;
 typedef LifeCycleController = SuperController;
-typedef Service = GetxService;
 typedef BareController = RxController;
 typedef Toast = GetSnackBar;
 typedef Utils = GetUtils;
@@ -33,6 +31,7 @@ typedef NavPage = GetPage;
 typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
 typedef Json = Map<String, dynamic>;
+abstract class Service = GetxService with AutoDispose;
 
 extension NullOperand on num? {
   operator +(num? n) =>
@@ -43,6 +42,15 @@ extension NullOperand on num? {
 
   operator /(num? n) =>
       this == null && n == null ? null : (this ?? 0) / (n ?? 1);
+}
+
+RxVoid get obs => RxVoid();
+
+class RxVoid extends Rx<void> {
+  RxVoid() : super(null);
+
+  @override
+  void call([void v]) => refresh();
 }
 
 class Instantiator {

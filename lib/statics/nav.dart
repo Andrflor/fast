@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,25 +58,99 @@ class Nav {
     }
   }
 
+  static Future<T> _to<T>(
+    String page, {
+    dynamic arguments,
+    Map<String, String>? parameters,
+    Transition? transition,
+  }) async {
+    if (transition == null) {
+      return delegate.toNamed(page,
+          arguments: arguments, parameters: parameters);
+    }
+
+    if (parameters != null) {
+      final uri = Uri(path: page, queryParameters: parameters);
+      page = uri.toString();
+    }
+
+    final decoder = Get.routeTree.matchRoute(page, arguments: arguments);
+    decoder.replaceArguments(arguments);
+
+    final completer = Completer<T>();
+
+    if (decoder.route != null) {
+      //TODO: remove this or make it only be used on the current route
+      await delegate.pushHistory(
+        GetNavConfig(
+          currentTreeBranch: decoder.treeBranch
+              .map(
+                (e) => GetPage(
+                  name: e.name,
+                  page: e.page,
+                  title: e.title,
+                  participatesInRootNavigator: e.participatesInRootNavigator,
+                  gestureWidth: e.gestureWidth,
+                  maintainState: e.maintainState,
+                  curve: e.curve,
+                  alignment: e.alignment,
+                  parameters: e.parameters,
+                  opaque: e.opaque,
+                  transitionDuration: e.transitionDuration,
+                  popGesture: e.popGesture,
+                  binding: e.binding,
+                  bindings: e.bindings,
+                  transition: transition,
+                  customTransition: e.customTransition,
+                  fullscreenDialog: e.fullscreenDialog,
+                  children: e.children,
+                  middlewares: e.middlewares,
+                  unknownRoute: e.unknownRoute,
+                  arguments: e.arguments,
+                  showCupertinoParallax: e.showCupertinoParallax,
+                  preventDuplicates: e.preventDuplicates,
+                ),
+              )
+              .toList(),
+          location: page,
+          state: null,
+        ),
+      );
+
+      return completer.future;
+    } else {
+      return Future.value();
+    }
+  }
+
   static Future<T?>? to<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
-  }) =>
-      delegate.toNamed<T>(page, arguments: arguments, parameters: parameters);
+    Transition? transition,
+  }) async =>
+      _to<T>(page,
+          arguments: arguments, parameters: parameters, transition: transition);
+
   static Future<T?>? off<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
-  }) =>
-      delegate.offNamed<T>(page, arguments: arguments, parameters: parameters);
+    Transition? transition,
+  }) async {
+    history.removeLast();
+    return to<T>(page,
+        arguments: arguments, parameters: parameters, transition: transition);
+  }
 
   static Future<T?>? offAll<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
+    Transition? transition,
   }) async {
     await clearHistory();
-    return off<T>(page, arguments: arguments, parameters: parameters);
+    return off<T>(page,
+        arguments: arguments, parameters: parameters, transition: transition);
   }
 }

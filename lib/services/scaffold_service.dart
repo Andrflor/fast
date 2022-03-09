@@ -1,3 +1,4 @@
+import 'package:get/get_rx/src/rx_workers/rx_workers.dart' show ever;
 import 'package:fast/services/responsive_service.dart';
 import 'package:flutter/material.dart';
 

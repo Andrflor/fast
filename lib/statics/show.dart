@@ -150,12 +150,12 @@ class Show {
       await Show.dialog<T>(
           Dialog(
             shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                borderRadius: BorderRadius.all(Radius.circular(6.0))),
             child: SizedBox(
               width: 200,
               height: content == null ? 110 : 200,
               child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(6.0)),
                 child: Scaffold(
                   appBar: AppBar(
                     leadingWidth: 0,

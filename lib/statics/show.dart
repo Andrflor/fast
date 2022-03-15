@@ -137,6 +137,7 @@ class Show {
     String preventText = "Annuler",
     Function()? processAction,
     Function() preventAction = Nav.back,
+    RxBool? canProcess,
     bool barrierDismissible = true,
     Color? barrierColor,
     bool useSafeArea = true,
@@ -146,62 +147,68 @@ class Show {
     Curve? transitionCurve,
     String? name,
     RouteSettings? routeSettings,
-  }) async =>
-      await Show.dialog<T>(
-          Dialog(
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(6.0))),
-            child: SizedBox(
-              width: 200,
-              height: content == null ? 110 : 200,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-                child: Scaffold(
-                  appBar: AppBar(
-                    leadingWidth: 0,
-                    leading: Container(),
-                    title: AutoSizeText(
-                      title,
-                      maxLines: 1,
-                    ),
+  }) async {
+    final canProcessAction = canProcess ?? true.obs;
+    return await Show.dialog<T>(
+        Dialog(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(6.0))),
+          child: SizedBox(
+            width: 200,
+            height: content == null ? 110 : 200,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(6.0)),
+              child: Scaffold(
+                appBar: AppBar(
+                  leadingWidth: 0,
+                  leading: Container(),
+                  title: AutoSizeText(
+                    title,
+                    maxLines: 1,
                   ),
-                  body: Material(
-                    elevation: 8,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        if (content != null)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20.0, right: 20.0, bottom: 10, top: 0),
-                            child: SizedBox(height: 45, child: content),
-                          ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                                onPressed: preventAction,
-                                child: Text(preventText)),
-                            ElevatedButton(
-                                onPressed: processAction,
-                                child: Text(processText)),
-                          ],
+                ),
+                body: Material(
+                  elevation: 8,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (content != null)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, bottom: 10, top: 0),
+                          child: SizedBox(height: 45, child: content),
                         ),
-                      ],
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                              onPressed: preventAction,
+                              child: Text(preventText)),
+                          Obx(
+                            () => ElevatedButton(
+                                onPressed: canProcessAction.value
+                                    ? processAction
+                                    : null,
+                                child: Text(processText)),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
-          barrierDismissible: barrierDismissible,
-          barrierColor: barrierColor,
-          useSafeArea: useSafeArea,
-          navigatorKey: navigatorKey,
-          arguments: arguments,
-          transitionCurve: transitionCurve,
-          name: name,
-          routeSettings: routeSettings);
+        ),
+        barrierDismissible: barrierDismissible,
+        barrierColor: barrierColor,
+        useSafeArea: useSafeArea,
+        navigatorKey: navigatorKey,
+        arguments: arguments,
+        transitionCurve: transitionCurve,
+        name: name,
+        routeSettings: routeSettings);
+  }
 
   static Future<T?> dialog<T>(
     Widget widget, {

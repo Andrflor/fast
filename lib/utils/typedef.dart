@@ -18,8 +18,11 @@ export 'package:get/get_navigation/src/routes/transitions_type.dart';
 export 'package:get/get_rx/src/rx_types/rx_types.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+export 'package:get/get_utils/src/extensions/internacionalization.dart';
 export 'package:get/get_rx/src/rx_workers/rx_workers.dart'
     show Worker, Workers, WorkerCallback;
+
+final a = ''.tr;
 
 // Some syntaxic sugar
 typedef ControlledWidget<T extends WidgetAware> = GetWidget<T>;

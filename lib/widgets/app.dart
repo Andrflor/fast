@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:yaml/yaml.dart';
 
 import '../statics/nav.dart';
+
 import 'button_dispatcher.dart';
 import 'mouse_drag_scroll_behavior.dart';
 import 'responsive.dart';
@@ -19,6 +21,8 @@ class App extends StatelessWidget {
   final List<Locale>? locales;
   final ThemeData? lightTheme;
   final ThemeData? darkTheme;
+  final String translationFile;
+  final bool yamlI18n;
   final bool debugBanner;
 
   /// Use system default if darkMode is null
@@ -39,6 +43,8 @@ class App extends StatelessWidget {
   /// fuction return false no pop will happen
   final Future<bool?> Function()? onExit;
 
+  late final Map<String, Map<String, String>>? _translations;
+
   App(
       {Key? key,
       required this.title,
@@ -49,6 +55,8 @@ class App extends StatelessWidget {
       this.onExit,
       this.lightTheme,
       this.darkMode,
+      this.translationFile = 'assets/translations.yaml',
+      this.yamlI18n = false,
       this.debugBanner = false,
       this.locales,
       this.useSystemThemeMode = true,
@@ -68,6 +76,7 @@ class App extends StatelessWidget {
       supportedLocales: locales ?? [],
       backButtonDispatcher: dispatcher,
       scrollBehavior: MouseDragScrollBehavior(),
+      translationsKeys: _translations,
       debugShowCheckedModeBanner: debugBanner,
       theme: lightTheme,
       darkTheme: darkTheme,
@@ -86,6 +95,9 @@ class App extends StatelessWidget {
 
     WidgetsFlutterBinding.ensureInitialized();
 
+    _translations =
+        yamlI18n ? await (_loadTranslations(translationFile)) : null;
+
     if (initialBindings?.dependencies is Future<dynamic> Function()) {
       await (initialBindings?.dependencies() as Future<dynamic>);
     } else {
@@ -93,4 +105,19 @@ class App extends StatelessWidget {
     }
     runApp(this);
   }
+}
+
+Future<Map<String, Map<String, String>>> _loadTranslations(
+    String filename) async {
+  final Map<String, Map<String, String>> translations = {};
+  final data = await rootBundle.loadString(filename);
+  for (var entry in (loadYaml(data) as YamlMap).entries) {
+    for (var translation in (entry.value as YamlMap).entries) {
+      if (!translations.keys.contains(translation.key)) {
+        translations[translation.key] = {};
+      }
+      translations[translation.key]![entry.key] = translation.value;
+    }
+  }
+  return translations;
 }

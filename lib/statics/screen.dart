@@ -39,8 +39,8 @@ class Screen {
 
   static bool get isDarkMode => Get.isDarkMode;
 
-  static void changeThemeMode(ThemeMode themeMode) =>
-      Get.changeThemeMode(themeMode);
+  static set themeMode(ThemeMode themeMode) => Get.changeThemeMode(themeMode);
 
-  static void changeTheme(ThemeData theme) => Get.changeTheme(theme);
+  static set theme(ThemeData theme) => Get.changeTheme(theme);
+  static ThemeData get theme => Get.theme;
 }

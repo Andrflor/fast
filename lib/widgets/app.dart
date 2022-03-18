@@ -16,7 +16,6 @@ late final ButtonDispatcher dispatcher;
 class App extends StatelessWidget {
   final String title;
   final String? initialRoute;
-  final String? locale;
   final Bindings? initialBindings;
   final List<GetPage> routes;
   final List<Locale>? locales;
@@ -28,6 +27,9 @@ class App extends StatelessWidget {
 
   /// Use system default if darkMode is null
   final bool useSystemThemeMode;
+
+  /// Callback that alow to select local on start
+  final String? Function()? locale;
 
   /// Callback that allow to select darkMode on start
   final bool? Function()? darkMode;
@@ -80,9 +82,11 @@ class App extends StatelessWidget {
       scrollBehavior: MouseDragScrollBehavior(),
       translationsKeys: _translations,
       debugShowCheckedModeBanner: debugBanner,
-      locale: Locale(locale != null &&
-              (locales ?? []).map((e) => e.languageCode).contains(locale)
-          ? locale!
+      locale: Locale(locale?.call() != null &&
+              (locales ?? [])
+                  .map((e) => e.languageCode)
+                  .contains(locale?.call())
+          ? locale!.call()!
           : 'en'),
       theme: lightTheme,
       darkTheme: darkTheme,

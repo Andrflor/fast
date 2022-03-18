@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class Dep {
+abstract class Dep {
   static void lazyPut<S>(InstanceBuilderCallback<S> builder,
       {String? tag, bool fenix = false}) {
     GetInstance().lazyPut<S>(builder, tag: tag, fenix: fenix);

@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import '../widgets/app.dart' show dispatcher;
 import '../utils/typedef.dart' show sleep, obs;
 
-class Nav {
+abstract class Nav {
   static GetDelegate delegate = Get.rootDelegate;
   static List<GetNavConfig> get history => delegate.history;
   static Map<String, String>? get parameters =>

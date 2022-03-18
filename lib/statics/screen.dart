@@ -7,7 +7,7 @@ import '../services/responsive_service.dart';
 import 'platform.dart';
 import 'menu.dart';
 
-class Screen {
+abstract class Screen {
   static final ResponsiveService _responsiveService = ResponsiveService();
 
   static double get height => _responsiveService.height;

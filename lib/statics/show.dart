@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import './nav.dart';
 import '../../utils/typedef.dart';
 
-class Show {
+abstract class Show {
   static int _overlays = 0;
   static int _dialogs = 0;
   static int _datePickers = 0;

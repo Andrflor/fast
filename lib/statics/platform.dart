@@ -6,7 +6,7 @@ import 'dart:io' as io show Platform;
 
 import './screen.dart';
 
-class Platform {
+abstract class Platform {
   static bool isAndroid = kIsWeb
       ? defaultTargetPlatform == TargetPlatform.android
       : io.Platform.isAndroid;

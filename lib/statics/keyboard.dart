@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../services/responsive_service.dart';
 
-class Keyboard {
+abstract class Keyboard {
   static final ResponsiveService _responsiveService = ResponsiveService();
 
   static RxBool visible = _responsiveService.keyboardVisible;

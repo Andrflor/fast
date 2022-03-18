@@ -1,6 +1,6 @@
 import './screen.dart';
 
-class Design {
+abstract class Design {
   static double height = 920;
   static double width = 500;
   static double get hScale =>

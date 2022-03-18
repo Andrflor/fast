@@ -3,7 +3,7 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import '../services/responsive_service.dart';
 import '../services/scaffold_service.dart';
 
-class Menu {
+abstract class Menu {
   static final ScaffoldService _scaffoldService = ScaffoldService();
   static final ResponsiveService _responsiveService = ResponsiveService();
 

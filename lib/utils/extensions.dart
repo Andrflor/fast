@@ -1,3 +1,4 @@
+import 'package:fast/utils/typedef.dart';
 import 'package:get/get.dart';
 
 import '../statics/design.dart';
@@ -18,6 +19,41 @@ extension StringCasingExtension on String {
       .map((str) => str.capital)
       .join('\n');
   String get label => this + ': ';
+
+  dynamic get itp => InterpolableString(tr);
+}
+
+class InterpolableString {
+  late final VarArgsCallback callback;
+  InterpolableString(String _value) {
+    callback = ((args, kwargs) {
+      String value = _value;
+      for (var i = 0; i < args.length; i++) {
+        value = value.replaceAll('\$${i + 1}', args[i].toString());
+      }
+      for (var kwarg in kwargs.entries) {
+        value = value.replaceAll('\$${kwarg.key}', kwarg.value.toString());
+      }
+      return value;
+    });
+  }
+
+  static const _offset = 'Symbol("'.length;
+
+  String call() => callback([], {});
+
+  @override
+  String noSuchMethod(Invocation invocation) {
+    return callback(
+      invocation.positionalArguments,
+      invocation.namedArguments.map(
+        (_k, v) {
+          var k = _k.toString();
+          return MapEntry(k.substring(_offset, k.length - 2), v);
+        },
+      ),
+    );
+  }
 }
 
 extension Physical on num {

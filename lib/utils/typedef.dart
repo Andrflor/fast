@@ -49,6 +49,31 @@ extension NullOperand on num? {
       this == null && n == null ? null : (this ?? 0) / (n ?? 1);
 }
 
+typedef VarArgsCallback = dynamic Function(
+    List<dynamic> args, Map<String, dynamic> kwargs);
+
+class VarArgsFunction {
+  final VarArgsCallback callback;
+  static const _offset = 'Symbol("'.length;
+
+  VarArgsFunction(this.callback);
+
+  dynamic call() => callback([], {});
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    return callback(
+      invocation.positionalArguments,
+      invocation.namedArguments.map(
+        (_k, v) {
+          var k = _k.toString();
+          return MapEntry(k.substring(_offset, k.length - 2), v);
+        },
+      ),
+    );
+  }
+}
+
 RxVoid get obs => RxVoid();
 
 class RxVoid extends Rx<void> {

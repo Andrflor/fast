@@ -134,7 +134,7 @@ class Show {
     required String title,
     Widget? content,
     String processText = "Ok",
-    String preventText = "Annuler",
+    String preventText = "Cancel",
     Function()? processAction,
     Function() preventAction = Nav.back,
     RxBool? canProcess,

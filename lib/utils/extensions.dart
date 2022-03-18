@@ -11,12 +11,13 @@ extension ViewExtensions<T> on GetView<T> {
 }
 
 extension StringCasingExtension on String {
-  String toCapitalized() =>
+  String get capital =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1)}' : '';
-  String toCamelCase() => replaceAll(RegExp(' +'), ' ')
-      .split(' ')
-      .map((str) => str.toCapitalized())
-      .join(' ');
+  String get camel => replaceAll(RegExp('\n+'), '\n')
+      .split('\n')
+      .map((str) => str.capital)
+      .join('\n');
+  String get label => this + ': ';
 }
 
 extension Physical on num {

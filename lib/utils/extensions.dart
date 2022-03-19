@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:fast/utils/typedef.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../statics/design.dart';
@@ -9,6 +12,18 @@ export 'package:get/get_utils/src/extensions/context_extensions.dart';
 
 extension ViewExtensions<T> on GetView<T> {
   T get c => controller;
+}
+
+extension Brightness on Color {
+  int _percent(int color, int percent) =>
+      min(255, max(0, (color * (1 + percent / 100)).round()));
+
+  Color brighter(int percent) => withRed(_percent(red, percent))
+      .withBlue(_percent(blue, percent))
+      .withGreen(_percent(green, percent));
+  Color darker(int percent) => brighter(-percent);
+  Color adaptive(int percent) =>
+      Screen.isDarkMode ? brighter(percent) : darker(percent);
 }
 
 extension StringCasingExtension on String {

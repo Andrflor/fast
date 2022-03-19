@@ -40,6 +40,8 @@ abstract class Screen {
   static bool get isDarkMode => Get.isDarkMode;
 
   static set themeMode(ThemeMode themeMode) => Get.changeThemeMode(themeMode);
+  static ThemeMode get themeMode =>
+      isDarkMode ? ThemeMode.dark : ThemeMode.light;
 
   static set theme(ThemeData theme) => Get.changeTheme(theme);
   static ThemeData get theme => Get.theme;

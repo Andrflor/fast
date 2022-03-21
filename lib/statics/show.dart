@@ -289,11 +289,9 @@ abstract class Show {
     return date;
   }
 
-  static Future<T?> Function<T>([FutureOr<T?> Function()?])? _payWall;
-  static void initPayWall(
-          Future<T?> Function<T>([FutureOr<T?> Function()?]) payWallCallback) =>
+  static Future<bool> Function()? _payWall;
+  static void initPayWall(Future<bool> Function() payWallCallback) =>
       _payWall = payWallCallback;
 
-  static Future<T?> payWall<T>([FutureOr<T?> Function()? callback]) async =>
-      await _payWall?.call(callback);
+  static Future<bool> payWall() async => await _payWall?.call() ?? true;
 }

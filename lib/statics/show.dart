@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -286,4 +288,12 @@ abstract class Show {
     _datePickerCount(false);
     return date;
   }
+
+  static Future<T?> Function<T>([FutureOr<T?> Function()?])? _payWall;
+  static void initPayWall(
+          Future<T?> Function<T>([FutureOr<T?> Function()?]) payWallCallback) =>
+      _payWall = payWallCallback;
+
+  static Future<T?> payWall<T>([FutureOr<T?> Function()? callback]) async =>
+      await _payWall?.call(callback);
 }

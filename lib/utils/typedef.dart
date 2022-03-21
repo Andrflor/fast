@@ -49,6 +49,8 @@ extension NullOperand on num? {
       this == null && n == null ? null : (this ?? 0) / (n ?? 1);
 }
 
+class PayWallException implements Exception {}
+
 typedef VarArgsCallback = dynamic Function(
     List<dynamic> args, Map<String, dynamic> kwargs);
 

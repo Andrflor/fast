@@ -72,7 +72,7 @@ class InterpolableString {
 }
 
 extension Physical on num {
-  get pp => this * Screen.dpi / 96;
-  get h => this * (Platform.isDesktop ? 1 : Design.hScale);
-  get w => this * (Platform.isDesktop ? 1 : Design.wScale);
+  num get pp => this * Screen.dpi / 96;
+  num get h => this * (Platform.isDesktop ? 1 : Design.hScale);
+  num get w => this * (Platform.isDesktop ? 1 : Design.wScale);
 }

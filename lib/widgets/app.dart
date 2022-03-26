@@ -81,6 +81,7 @@ class App extends StatelessWidget {
       backButtonDispatcher: dispatcher,
       scrollBehavior: MouseDragScrollBehavior(),
       translationsKeys: _translations,
+      defaultTransition: Transition.fadeIn,
       debugShowCheckedModeBanner: debugBanner,
       locale: Locale(locale?.call() != null &&
               (locales ?? [])

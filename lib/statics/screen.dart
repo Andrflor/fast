@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../services/responsive_service.dart';
+import 'nav.dart';
 import 'platform.dart';
 import 'menu.dart';
 
@@ -23,8 +24,10 @@ abstract class Screen {
   static double get pixelRatio => Get.pixelRatio;
   static double get ratio => height / width;
 
-  static double get statusBarHeight => Get.statusBarHeight;
-  static double get bottomBarHeight => Get.bottomBarHeight;
+  static double get statusBarHeight =>
+      MediaQuery.of(Nav.context).viewPadding.top;
+  static double get bottomBarHeight =>
+      MediaQuery.of(Nav.context).viewPadding.bottom;
 
   static Orientation get orientation => _responsiveService.orientation.value;
   static bool get isPortrait => orientation == Orientation.portrait;

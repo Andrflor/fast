@@ -18,16 +18,19 @@ abstract class Show {
   static SnackbarController confirmSnack({
     required bool isOk,
     required String success,
-    required String error,
+    required dynamic error,
   }) =>
       snackBar(
         Toast(
           backgroundColor: isOk ? Colors.green : Colors.red,
-          message: isOk ? success : error,
+          message: isOk ? success : error.toString(),
           duration: Duration(milliseconds: isOk ? 2000 : 4000),
           isDismissible: false,
         ),
       );
+
+  static SnackbarController failedSnack(dynamic message) =>
+      confirmSnack(isOk: false, success: '', error: message);
 
   static void _bottomSheetCount(bool isOpening) {
     if (isOpening) {

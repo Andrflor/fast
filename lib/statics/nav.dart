@@ -31,8 +31,12 @@ abstract class Nav {
   static final hasDialog = false.obs;
   static final hasOverlay = false.obs;
   static final hasDatePicker = false.obs;
+  static final canBack = true.obs;
+  static final canNav = true.obs;
   static final onBack = obs;
-  static var canBack = true.obs;
+  static final onNav = obs;
+
+  static Future<T?>? Function<T>()? nextNavIntent;
 
   static bool get isSnackbar => Get.isSnackbarOpen;
 
@@ -60,20 +64,36 @@ abstract class Nav {
     }
   }
 
+  static Future<T?>? resume<T>() async {
+    final callback = nextNavIntent;
+    nextNavIntent = null;
+    return await callback?.call<T>();
+  }
+
   static Future<T?>? to<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
-  }) async =>
-      delegate.toNamed<T>(page, arguments: arguments, parameters: parameters);
+  }) async {
+    nextNavIntent = <T>() async {
+      return delegate.toNamed<T>(page,
+          arguments: arguments, parameters: parameters);
+    };
+    Nav.onNav();
+    if (Nav.canNav()) return resume<T>();
+  }
 
   static Future<T?>? off<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
   }) async {
-    history.removeLast();
-    return to<T>(page, arguments: arguments, parameters: parameters);
+    nextNavIntent = <T>() async {
+      history.removeLast();
+      return to<T>(page, arguments: arguments, parameters: parameters);
+    };
+    Nav.onNav();
+    if (Nav.canNav()) return resume<T>();
   }
 
   static Future<T?>? offAll<T>(
@@ -81,7 +101,11 @@ abstract class Nav {
     dynamic arguments,
     Map<String, String>? parameters,
   }) async {
-    await clearHistory();
-    return off<T>(page, arguments: arguments, parameters: parameters);
+    nextNavIntent = <T>() async {
+      await clearHistory();
+      return off<T>(page, arguments: arguments, parameters: parameters);
+    };
+    Nav.onNav();
+    if (Nav.canNav()) return resume<T>();
   }
 }

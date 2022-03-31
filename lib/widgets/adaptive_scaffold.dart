@@ -5,7 +5,7 @@ import '../services/scaffold_layout_controller.dart';
 import '../services/scaffold_service.dart';
 import '../utils/typedef.dart';
 
-class AdaptiveScaffold extends StatelessWidget {
+class AdaptiveScaffold extends StatefulWidget {
   final bool extendBody;
   final bool extendBodyBehindAppBar;
   final PreferredSizeWidget? appBar;
@@ -29,9 +29,7 @@ class AdaptiveScaffold extends StatelessWidget {
   final bool drawerEnableOpenDragGesture;
   final bool endDrawerEnableOpenDragGesture;
   final String? restorationId;
-  final rebuild = false.obs;
   late final Key _key;
-  final _scaffoldService = ScaffoldService();
 
   AdaptiveScaffold({
     Key? key,
@@ -60,23 +58,36 @@ class AdaptiveScaffold extends StatelessWidget {
     this.restorationId,
   }) : super(key: key) {
     _key = key ?? GlobalKey<ScaffoldState>();
-    _scaffoldService.openDelegate = open;
-    _scaffoldService.closeDelegate = close;
-    _scaffoldService.isOpenDelegate = isDrawerOpen;
   }
 
+  @override
+  State<AdaptiveScaffold> createState() => AdaptiveScaffoldState();
+}
+
+class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
+  final rebuild = false.obs;
+
+  @override
+  void initState() {
+    _scaffoldService.pushScaffold(this);
+    super.initState();
+  }
+
+  final _scaffoldService = ScaffoldService();
+
   bool isDrawerOpen() =>
-      (_key as GlobalKey<ScaffoldState>).currentState?.isDrawerOpen ?? false;
+      (widget._key as GlobalKey<ScaffoldState>).currentState?.isDrawerOpen ??
+      false;
 
   void open() {
     if (!isDrawerOpen()) {
-      (_key as GlobalKey<ScaffoldState>).currentState?.openDrawer();
+      (widget._key as GlobalKey<ScaffoldState>).currentState?.openDrawer();
     }
   }
 
   void close() {
     if (isDrawerOpen()) {
-      (_key as GlobalKey<ScaffoldState>).currentState?.openEndDrawer();
+      (widget._key as GlobalKey<ScaffoldState>).currentState?.openEndDrawer();
     }
   }
 
@@ -87,43 +98,50 @@ class AdaptiveScaffold extends StatelessWidget {
       builder: (layout) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (layout.isDocked) drawer!,
+          if (layout.isDocked) widget.drawer!,
           Expanded(
             child: Scaffold(
-              key: _key,
-              appBar: (appBar is AppBar)
-                  ? _scaffoldService.injectAppBar((appBar as AppBar))
-                  : appBar,
-              body: body,
-              floatingActionButton: floatingActionButton,
-              floatingActionButtonLocation: floatingActionButtonLocation,
-              floatingActionButtonAnimator: floatingActionButtonAnimator,
-              persistentFooterButtons: persistentFooterButtons,
-              drawer: appBar == null
+              key: widget._key,
+              appBar: (widget.appBar is AppBar)
+                  ? _scaffoldService.injectAppBar((widget.appBar as AppBar))
+                  : widget.appBar,
+              body: widget.body,
+              floatingActionButton: widget.floatingActionButton,
+              floatingActionButtonLocation: widget.floatingActionButtonLocation,
+              floatingActionButtonAnimator: widget.floatingActionButtonAnimator,
+              persistentFooterButtons: widget.persistentFooterButtons,
+              drawer: widget.appBar == null
                   ? null
                   : layout.isDocked
                       ? null
-                      : drawer,
-              onDrawerChanged: onDrawerChanged,
-              endDrawer: endDrawer,
-              onEndDrawerChanged: onEndDrawerChanged,
-              bottomNavigationBar: bottomNavigationBar,
-              bottomSheet: bottomSheet,
-              backgroundColor: backgroundColor,
-              resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-              primary: primary,
-              drawerDragStartBehavior: drawerDragStartBehavior,
-              extendBody: extendBody,
-              extendBodyBehindAppBar: extendBodyBehindAppBar,
-              drawerScrimColor: drawerScrimColor,
-              drawerEdgeDragWidth: drawerEdgeDragWidth,
-              drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
-              endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
-              restorationId: restorationId,
+                      : widget.drawer,
+              onDrawerChanged: widget.onDrawerChanged,
+              endDrawer: widget.endDrawer,
+              onEndDrawerChanged: widget.onEndDrawerChanged,
+              bottomNavigationBar: widget.bottomNavigationBar,
+              bottomSheet: widget.bottomSheet,
+              backgroundColor: widget.backgroundColor,
+              resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+              primary: widget.primary,
+              drawerDragStartBehavior: widget.drawerDragStartBehavior,
+              extendBody: widget.extendBody,
+              extendBodyBehindAppBar: widget.extendBodyBehindAppBar,
+              drawerScrimColor: widget.drawerScrimColor,
+              drawerEdgeDragWidth: widget.drawerEdgeDragWidth,
+              drawerEnableOpenDragGesture: widget.drawerEnableOpenDragGesture,
+              endDrawerEnableOpenDragGesture:
+                  widget.endDrawerEnableOpenDragGesture,
+              restorationId: widget.restorationId,
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scaffoldService.removeScaffold(this);
+    super.dispose();
   }
 }

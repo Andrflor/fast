@@ -1,16 +1,14 @@
+import 'package:fast/fast.dart';
 import 'package:get/get_rx/src/rx_workers/rx_workers.dart' show ever;
-import 'package:fast/services/responsive_service.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-
-import '../statics/dep.dart';
-import '../statics/menu.dart';
-import '../utils/typedef.dart';
-import 'scaffold_layout_controller.dart';
 
 class ScaffoldService {
   Function()? openDelegate;
   Function()? closeDelegate;
   bool Function()? isOpenDelegate;
+
+  final List<AdaptiveScaffoldState> activeScaffolds = [];
 
   final navCollapsed = false.obs;
   final layoutController = Dep.put(ScaffoldLayoutController(), permanent: true);
@@ -26,6 +24,26 @@ class ScaffoldService {
       ResponsiveService().menuWidth.value =
           value ? Menu.collapsedWidth : Menu.fullWidth;
     });
+  }
+
+  void _registerScaffold(
+      Function()? open, Function()? close, bool Function()? isOpen) {
+    openDelegate = open;
+    closeDelegate = close;
+    isOpenDelegate = isOpen;
+  }
+
+  void pushScaffold(AdaptiveScaffoldState scaffold) {
+    activeScaffolds.add(scaffold);
+    _registerScaffold(scaffold.open, scaffold.close, scaffold.isDrawerOpen);
+  }
+
+  void removeScaffold(AdaptiveScaffoldState scaffold) {
+    activeScaffolds.remove(scaffold);
+    _registerScaffold(
+        activeScaffolds.lastOrNull?.open,
+        activeScaffolds.lastOrNull?.close,
+        activeScaffolds.lastOrNull?.isDrawerOpen);
   }
 
   AppBar injectAppBar(AppBar appBar) {

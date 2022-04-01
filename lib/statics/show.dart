@@ -19,12 +19,14 @@ abstract class Show {
     required bool isOk,
     required String success,
     required dynamic error,
+    Duration successDuration = const Duration(milliseconds: 2000),
+    Duration errorDuration = const Duration(milliseconds: 4000),
   }) =>
       snackBar(
         Toast(
           backgroundColor: isOk ? Colors.green : Colors.red,
           message: isOk ? success : error.toString(),
-          duration: Duration(milliseconds: isOk ? 2000 : 4000),
+          duration: isOk ? successDuration : errorDuration,
           isDismissible: false,
         ),
       );

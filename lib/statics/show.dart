@@ -160,47 +160,53 @@ abstract class Show {
               borderRadius: BorderRadius.all(Radius.circular(6.0))),
           child: SizedBox(
             width: 200,
-            height: content == null ? 110 : 200,
             child: ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-              child: Scaffold(
-                appBar: AppBar(
-                  leadingWidth: 0,
-                  leading: Container(),
-                  title: AutoSizeText(
-                    title,
-                    maxLines: 1,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppBar(
+                    leadingWidth: 0,
+                    leading: Container(),
+                    title: AutoSizeText(
+                      title,
+                      maxLines: 1,
+                    ),
                   ),
-                ),
-                body: Material(
-                  elevation: 8,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (content != null)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20.0, right: 20.0, bottom: 10, top: 0),
-                          child: SizedBox(height: 45, child: content),
-                        ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Material(
+                    elevation: 8,
+                    child: Padding(
+                      padding: EdgeInsets.all(content == null ? 0.0 : 8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          TextButton(
-                              onPressed: preventAction,
-                              child: Text(preventText)),
-                          Obx(
-                            () => ElevatedButton(
-                                onPressed: canProcessAction.value
-                                    ? processAction
-                                    : null,
-                                child: Text(processText)),
+                          if (content != null)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 20.0, right: 20.0, bottom: 10, top: 0),
+                              child: content,
+                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton(
+                                  onPressed: preventAction,
+                                  child: Text(preventText)),
+                              Obx(
+                                () => ElevatedButton(
+                                    onPressed: canProcessAction.value
+                                        ? processAction
+                                        : null,
+                                    child: Text(processText)),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),

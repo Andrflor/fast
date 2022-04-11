@@ -34,7 +34,7 @@ abstract class Nav {
   static final canBack = true.obs;
   static final canNav = true.obs;
   static final onBack = obs;
-  static final onNav = obs;
+  static final onNav = "".obs;
 
   static Future<T?>? Function<T>()? nextNavIntent;
 
@@ -79,7 +79,7 @@ abstract class Nav {
       return delegate.toNamed<T>(page,
           arguments: arguments, parameters: parameters);
     };
-    Nav.onNav();
+    Nav.onNav(page);
     if (Nav.canNav()) return resume<T>();
   }
 
@@ -92,7 +92,7 @@ abstract class Nav {
       history.removeLast();
       return to<T>(page, arguments: arguments, parameters: parameters);
     };
-    Nav.onNav();
+    Nav.onNav(page);
     if (Nav.canNav()) return resume<T>();
   }
 
@@ -105,7 +105,7 @@ abstract class Nav {
       await clearHistory();
       return off<T>(page, arguments: arguments, parameters: parameters);
     };
-    Nav.onNav();
+    Nav.onNav(page);
     if (Nav.canNav()) return resume<T>();
   }
 }

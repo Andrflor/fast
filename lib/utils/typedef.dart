@@ -24,7 +24,6 @@ export 'package:get/get_rx/src/rx_workers/rx_workers.dart'
     show Worker, Workers, WorkerCallback;
 
 // Some syntaxic sugar
-typedef ControlledWidget<T extends WidgetAware> = GetWidget<T>;
 typedef LifeCycleController = SuperController;
 typedef BareController = RxController;
 typedef Toast = GetSnackBar;
@@ -38,6 +37,8 @@ typedef Json = Map<String, dynamic>;
 typedef SingleTickerProvider = GetSingleTickerProviderStateMixin;
 typedef TickerProvider = GetTickerProviderStateMixin;
 abstract class Service = GetxService with AutoDispose;
+abstract class ControlledWidget<T extends Controller> = GetWidget<T>
+    with ViewState<T>;
 
 extension NullOperand on num? {
   operator +(num? n) =>
@@ -449,9 +450,11 @@ mixin AsyncInit on GetLifeCycleBase {
   }
 }
 
-abstract class View<T extends Controller> extends GetView<T> {
-  const View({Key? key}) : super(key: key);
+mixin Controlled<T extends Controller> on Widget {
+  T get controller;
+}
 
+mixin ViewState<T extends Controller> on Widget implements Controlled<T> {
   @nonVirtual
   String get error => controller.status.errorMessage ?? '';
 
@@ -471,6 +474,10 @@ abstract class View<T extends Controller> extends GetView<T> {
           onError: (_) => onError(context),
           onEmpty: onEmpty(context),
           onLoading: onLoading(context));
+}
+
+abstract class View<T extends Controller> extends GetView<T> with ViewState<T> {
+  const View({Key? key}) : super(key: key);
 }
 
 /// Syntaxic sugar for Theme.of(context)

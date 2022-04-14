@@ -38,6 +38,16 @@ extension StringCasingExtension on String {
   dynamic get itp => InterpolableString(tr);
 }
 
+extension Pipe<T> on Rx<T> {
+  Rx<S> pipe<S>(S Function(T e) convert) =>
+      convert(value).obs..bindStream(stream.map(convert));
+}
+
+extension PipeList<T> on RxList<T> {
+  Rx<S> pipe<S>(S Function(List<T> e) convert) =>
+      (convert(call())).obs..bindStream(stream.map(convert));
+}
+
 class InterpolableString {
   late final VarArgsCallback callback;
   InterpolableString(String _value) {
@@ -69,6 +79,17 @@ class InterpolableString {
       ),
     );
   }
+}
+
+extension NullOperand on num? {
+  operator +(num? n) =>
+      this == null && n == null ? null : (n ?? 0) + (this ?? 0);
+
+  operator *(num? n) =>
+      this == null && n == null ? null : (n ?? 0) * (this ?? 0);
+
+  operator /(num? n) =>
+      this == null && n == null ? null : (this ?? 0) / (n ?? 1);
 }
 
 extension Physical on num {

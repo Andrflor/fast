@@ -40,17 +40,6 @@ abstract class Service = GetxService with AutoDispose;
 abstract class ControlledWidget<T extends Controller> = GetWidget<T>
     with ViewState<T>;
 
-extension NullOperand on num? {
-  operator +(num? n) =>
-      this == null && n == null ? null : (n ?? 0) + (this ?? 0);
-
-  operator *(num? n) =>
-      this == null && n == null ? null : (n ?? 0) * (this ?? 0);
-
-  operator /(num? n) =>
-      this == null && n == null ? null : (this ?? 0) / (n ?? 1);
-}
-
 typedef VarArgsCallback = dynamic Function(
     List<dynamic> args, Map<String, dynamic> kwargs);
 

@@ -14,6 +14,8 @@ import 'package:get/get.dart' as workerlib
 export 'package:get/get_connect/http/src/response/response.dart';
 export 'package:get/get_connect/http/src/status/http_status.dart';
 export 'package:get/get_connect/http/src/request/request.dart';
+export 'package:get/get_connect/http/src/multipart/form_data.dart';
+export 'package:get/get_connect/http/src/multipart/multipart_file.dart';
 export 'package:get/get_instance/src/bindings_interface.dart';
 export 'package:get/get_navigation/src/routes/transitions_type.dart';
 export 'package:get/get_rx/src/rx_types/rx_types.dart';

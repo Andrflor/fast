@@ -16,6 +16,11 @@ class ResponsiveService {
   double get width => size.width;
   double get height => size.height;
 
+  double get diagonal =>
+      sqrt(pow(width * Screen.pixelRatio, 2) +
+          pow(height * Screen.pixelRatio, 2)) /
+      (Screen.pixelRatio * Screen.dpi);
+
   static final ResponsiveService _instance = ResponsiveService._();
 
   ResponsiveService._();
@@ -28,8 +33,8 @@ class ResponsiveService {
   static bool get willDisplayCollapsed =>
       Screen.width > 600 && Screen.height > 350 && Screen.isLarge;
 
-  final sizeChanged = const Size(0, 0).obs;
-  final diagonalInches = 0.0.obs;
+  final sizeChanged = Get.size.obs;
+  late final diagonalInches = diagonal.obs;
 
   final keyboardHeight = 0.0.obs;
   final keyboardVisible = false.obs;
@@ -105,11 +110,7 @@ class ResponsiveService {
   }
 
   void notifyDiagonal() {
-    if (width != 0 && height != 0) {
-      diagonalInches.value = sqrt(pow(width * Screen.pixelRatio, 2) +
-              pow(height * Screen.pixelRatio, 2)) /
-          (Screen.pixelRatio * Screen.dpi);
-    }
+    diagonalInches.value = diagonal;
   }
 
   void notify() {

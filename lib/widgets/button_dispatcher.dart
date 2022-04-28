@@ -38,6 +38,6 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
         ? Nav.history[Nav.history.length - 2].location ?? ''
         : '');
 
-    return await Nav.pop();
+    return canPop ? Nav.pop() : super.didPopRoute();
   }
 }

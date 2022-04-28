@@ -91,10 +91,9 @@ abstract class Nav {
     Map<String, String>? parameters,
   }) async {
     nextNavIntent = <T>() async {
-      if (await canPop()) {
-        await pop();
-      }
-      return to<T>(page, arguments: arguments, parameters: parameters);
+      history.removeLast();
+      return delegate.toNamed<T>(page,
+          arguments: arguments, parameters: parameters);
     };
     Nav.onNav(page);
     if (Nav.canNav()) return resume<T>();
@@ -107,7 +106,9 @@ abstract class Nav {
   }) async {
     nextNavIntent = <T>() async {
       await clearHistory();
-      return off<T>(page, arguments: arguments, parameters: parameters);
+      history.removeLast();
+      return delegate.toNamed<T>(page,
+          arguments: arguments, parameters: parameters);
     };
     Nav.onNav(page);
     if (Nav.canNav()) return resume<T>();

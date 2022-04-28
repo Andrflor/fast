@@ -26,13 +26,18 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
       return true;
     }
 
-    if (!(Nav.isAnyOverlay || await Nav.canPop())) {
+    final canPop = await Nav.canPop();
+    if (!(Nav.isAnyOverlay || canPop)) {
       final onExitResult = await onExit?.call();
       if (onExitResult != null) {
         return onExitResult;
       }
     }
 
-    return super.didPopRoute();
+    Nav.onNav(Nav.history.length >= 2
+        ? Nav.history[Nav.history.length - 2].location ?? ''
+        : '');
+
+    return canPop ? Nav.pop() : super.didPopRoute();
   }
 }

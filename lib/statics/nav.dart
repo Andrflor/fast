@@ -17,6 +17,8 @@ abstract class Nav {
       delegate.currentConfiguration!.currentPage?.name ?? "";
   static bool isCurrent(String route) => current.contains(route);
   static Future<bool> back() async => await dispatcher.didPopRoute();
+  static Future<bool> pop() async =>
+      await delegate.popRoute(popMode: PopMode.History);
   static Future<bool> canPop() async => await delegate.canPopHistory();
 
   static BuildContext get context => Get.context!;
@@ -59,8 +61,8 @@ abstract class Nav {
   }
 
   static Future<void> clearHistory() async {
-    while (await delegate.canPopHistory()) {
-      await delegate.popHistory();
+    while (await canPop()) {
+      await pop();
     }
   }
 
@@ -89,7 +91,9 @@ abstract class Nav {
     Map<String, String>? parameters,
   }) async {
     nextNavIntent = <T>() async {
-      history.removeLast();
+      if (await canPop()) {
+        await pop();
+      }
       return to<T>(page, arguments: arguments, parameters: parameters);
     };
     Nav.onNav(page);

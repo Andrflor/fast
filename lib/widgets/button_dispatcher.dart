@@ -34,9 +34,9 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
       }
     }
 
-    Nav.onNav(Nav.history.length >= 2
-        ? Nav.history[Nav.history.length - 2].location ?? ''
-        : '');
+    if (!Nav.isAnyOverlay && Nav.history.length >= 2) {
+      Nav.onNav(Nav.history[Nav.history.length - 2].location);
+    }
 
     return canPop ? Nav.pop() : super.didPopRoute();
   }

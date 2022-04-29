@@ -17,6 +17,8 @@ abstract class Nav {
       delegate.currentConfiguration!.currentPage?.name ?? "";
   static bool isCurrent(String route) => current.contains(route);
   static Future<bool> back() async => await dispatcher.didPopRoute();
+  static Future<bool> closeOverlay() async =>
+      Nav.isAnyOverlay ? await Nav.back() : false;
   static Future<bool> pop() async =>
       await delegate.popRoute(popMode: PopMode.History);
   static Future<bool> canPop() async => await delegate.canPopHistory();

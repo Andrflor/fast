@@ -9,9 +9,7 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
 
   ButtonDispatcher({this.onBack, this.onExit});
 
-  @override
-  Future<bool> didPopRoute() async {
-    Nav.onBack();
+  Future<bool> back<T>() async {
     if (!Nav.canBack()) {
       return true;
     }
@@ -34,10 +32,17 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
       }
     }
 
+    return canPop ? Nav.pop() : super.didPopRoute();
+  }
+
+  @override
+  Future<bool> didPopRoute() async {
+    String? path;
     if (!Nav.isAnyOverlay && Nav.history.length >= 2) {
-      Nav.onNav(Nav.history[Nav.history.length - 2].location);
+      path = Nav.history[Nav.history.length - 2].location;
     }
 
-    return canPop ? Nav.pop() : super.didPopRoute();
+    return (await NavIntent(path ?? '', NavIntents.back).navigate<bool>()) ??
+        true;
   }
 }

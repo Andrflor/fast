@@ -38,14 +38,64 @@ extension StringCasingExtension on String {
   dynamic get itp => InterpolableString(tr);
 }
 
-extension Pipe<T> on Rx<T> {
-  Rx<S> pipe<S>(S Function(T e) convert) =>
-      convert(value).obs..bindStream(stream.map(convert));
+extension RxIterableOperators<T> on Iterable<Rx<T>> {
+  Rx<T> fuse() => fold(first.clone(), (i, e) => i..bind(e));
 }
 
-extension PipeList<T> on RxList<T> {
+extension RxIterableListOperators<T> on Iterable<RxList<T>> {
+  RxList<T> fuse() => fold(first.clone(), (i, e) => i..bind(e));
+}
+
+extension RxIterableSetOperators<T> on Iterable<RxSet<T>> {
+  RxSet<T> fuse() => fold(first.clone(), (i, e) => i..bind(e));
+}
+
+extension RxIterableMapOperators<K, V> on Iterable<RxMap<K, V>> {
+  RxMap<K, V> fuse() => fold(first.clone(), (i, e) => i..bind(e));
+}
+
+extension RxOperators<T> on Rx<T> {
+  Rx<S> pipe<S>(S Function(T e) convert) =>
+      convert(value).obs..bindStream(stream.map(convert));
+
+  Rx<T> obsWhere(bool Function(T e) test) =>
+      value.obs..bindStream(stream.where((e) => test(e)));
+
+  Rx<T> clone() => value.obs..bindStream(stream);
+  void bind(Rx<T> other) => bindStream(other.stream);
+}
+
+extension RxListOperators<T> on RxList<T> {
   Rx<S> pipe<S>(S Function(List<T> e) convert) =>
       (convert(call())).obs..bindStream(stream.map(convert));
+
+  RxList<T> obsWhere(bool Function(List<T> e) test) =>
+      call().obs..bindStream(stream.where((e) => test(e)));
+
+  RxList<T> clone() => call().obs..bindStream(stream);
+  void bind(RxList<T> other) => bindStream(other.stream);
+}
+
+extension RxSetOperators<T> on RxSet<T> {
+  Rx<S> pipe<S>(S Function(Set<T> e) convert) =>
+      (convert(call())).obs..bindStream(stream.map(convert));
+
+  RxSet<T> obsWhere(bool Function(Set<T> e) test) =>
+      call().obs..bindStream(stream.where((e) => test(e)));
+
+  RxSet<T> clone() => call().obs..bindStream(stream);
+  void bind(RxSet<T> other) => bindStream(other.stream);
+}
+
+extension RxMapOperators<K, V> on RxMap<K, V> {
+  Rx<S> pipe<S>(S Function(Map<K, V> e) convert) =>
+      (convert(call())).obs..bindStream(stream.map(convert));
+
+  RxMap<K, V> obsWhere(bool Function(Map<K, V> e) test) =>
+      call().obs..bindStream(stream.where((e) => test(e)));
+
+  RxMap<K, V> clone() => call().obs..bindStream(stream);
+  void bind(RxMap<K, V> other) => bindStream(other.stream);
 }
 
 class InterpolableString {

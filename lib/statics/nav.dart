@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../widgets/app.dart' show dispatcher;
-import '../utils/typedef.dart' show sleep, obs;
+import '../utils/typedef.dart' show sleep;
+import '../utils/extensions.dart' show RxOperators;
 
 abstract class Nav {
   static GetDelegate delegate = Get.rootDelegate;
@@ -37,10 +38,11 @@ abstract class Nav {
   static final hasDatePicker = false.obs;
   static final canBack = true.obs;
   static final canNav = true.obs;
-  static final onBack = obs;
-  static final onNav = "".obs;
+  static final onNav = Rxn<NavIntent>(null);
+  static final onBack = onNav.obsWhere((e) => e?.intent == NavIntents.back);
 
-  static Future<T?>? Function<T>()? nextNavIntent;
+  static NavIntent? get nextNavIntent => onNav();
+  static set nextNavIntent(NavIntent? navIntent) => onNav(navIntent);
 
   static bool get isSnackbar => Get.isSnackbarOpen;
 
@@ -71,48 +73,86 @@ abstract class Nav {
   static Future<T?>? resume<T>() async {
     final callback = nextNavIntent;
     nextNavIntent = null;
-    return await callback?.call<T>();
+    return await callback?.resume<T>();
   }
 
   static Future<T?>? to<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
-  }) async {
-    nextNavIntent = <T>() async {
-      return delegate.toNamed<T>(page,
-          arguments: arguments, parameters: parameters);
-    };
-    Nav.onNav(page);
-    if (Nav.canNav()) return resume<T>();
-  }
+  }) async =>
+      NavIntent(page, NavIntents.to,
+              arguments: arguments, parameters: parameters)
+          .navigate();
 
   static Future<T?>? off<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
-  }) async {
-    nextNavIntent = <T>() async {
-      history.removeLast();
-      return delegate.toNamed<T>(page,
-          arguments: arguments, parameters: parameters);
-    };
-    Nav.onNav(page);
-    if (Nav.canNav()) return resume<T>();
-  }
+  }) async =>
+      NavIntent(page, NavIntents.off,
+              arguments: arguments, parameters: parameters)
+          .navigate();
 
   static Future<T?>? offAll<T>(
     String page, {
     dynamic arguments,
     Map<String, String>? parameters,
-  }) async {
-    nextNavIntent = <T>() async {
-      await clearHistory();
-      history.removeLast();
-      return delegate.toNamed<T>(page,
-          arguments: arguments, parameters: parameters);
-    };
-    Nav.onNav(page);
-    if (Nav.canNav()) return resume<T>();
+  }) async =>
+      NavIntent(page, NavIntents.offAll,
+              arguments: arguments, parameters: parameters)
+          .navigate();
+}
+
+class NavIntent {
+  final String page;
+  final dynamic arguments;
+  final Map<String, String>? parameters;
+  final NavIntents intent;
+
+  NavIntent(this.page, this.intent, {this.parameters, this.arguments}) {
+    Nav.nextNavIntent = this;
   }
+
+  Future<T?>? navigate<T>() async {
+    if ((Nav.canNav() && intent != NavIntents.back) ||
+        (Nav.canBack() && intent == NavIntents.back)) return Nav.resume<T>();
+    return null;
+  }
+
+  Future<T?>? resume<T>() async {
+    switch (intent) {
+      case NavIntents.to:
+        return to<T>();
+      case NavIntents.off:
+        return off<T>();
+      case NavIntents.offAll:
+        return offAll<T>();
+      case NavIntents.back:
+        return dispatcher.back<T>() as Future<T?>?;
+    }
+  }
+
+  Future<T?>? to<T>() async => Nav.delegate
+      .toNamed<T>(page, parameters: parameters, arguments: arguments);
+
+  Future<T?>? off<T>() async {
+    Nav.history.removeLast();
+    return Nav.delegate
+        .toNamed<T>(page, arguments: arguments, parameters: parameters);
+  }
+
+  Future<T?>? offAll<T>() async {
+    await Nav.clearHistory();
+    Nav.history.removeLast();
+    return Nav.delegate
+        .toNamed<T>(page, arguments: arguments, parameters: parameters);
+  }
+}
+
+enum NavIntents {
+  to,
+  off,
+  offAll,
+  back,
 }

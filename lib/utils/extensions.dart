@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../statics/design.dart';
 import '../statics/platform.dart';
 import '../statics/screen.dart';
+import '../widgets/app.dart';
 
 export 'package:get/get_utils/src/extensions/context_extensions.dart';
 
@@ -23,7 +24,7 @@ extension Brightness on Color {
       .withGreen(_percent(green, percent));
   Color darker(int percent) => brighter(-percent);
   Color adaptive(int percent) =>
-      Screen.isDarkMode ? brighter(percent) : darker(percent);
+      App.isDarkMode ? brighter(percent) : darker(percent);
 }
 
 extension StringCasingExtension on String {

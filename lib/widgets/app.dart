@@ -25,11 +25,29 @@ class App extends StatelessWidget {
   final bool yamlI18n;
   final bool debugBanner;
 
+  static GetMaterialController get _controller => Get.rootController;
+
+  static void restart() => _controller.restartApp();
+
+  static bool get isDarkMode => Get.isDarkMode;
+
+  static set themeMode(ThemeMode themeMode) => Get.changeThemeMode(themeMode);
+  static ThemeMode get themeMode =>
+      isDarkMode ? ThemeMode.dark : ThemeMode.light;
+
+  static set theme(ThemeData theme) => Get.changeTheme(theme);
+  static ThemeData get theme => Get.theme;
+
+  static Locale? get currentLocale => Get.locale;
+
+  static Locale? get locale => Get.deviceLocale;
+  static set locale(Locale? loc) => loc == null ? null : Get.updateLocale(loc);
+
   /// Use system default if darkMode is null
   final bool useSystemThemeMode;
 
   /// Callback that alow to select local on start
-  final String? Function()? locale;
+  late final String? Function()? _locale;
 
   /// Callback that allow to select darkMode on start
   final bool? Function()? darkMode;
@@ -56,7 +74,7 @@ class App extends StatelessWidget {
       this.initialBindings,
       this.onBack,
       this.onExit,
-      this.locale,
+      final String? Function()? locale,
       this.lightTheme,
       this.darkMode,
       this.translationFile = 'assets/translations.yaml',
@@ -66,6 +84,7 @@ class App extends StatelessWidget {
       this.useSystemThemeMode = true,
       this.darkTheme})
       : super(key: key) {
+    _locale = locale;
     dispatcher = ButtonDispatcher(onBack: onBack, onExit: onExit);
   }
 
@@ -83,11 +102,11 @@ class App extends StatelessWidget {
       translationsKeys: _translations,
       defaultTransition: Transition.fadeIn,
       debugShowCheckedModeBanner: debugBanner,
-      locale: Locale(locale?.call() != null &&
+      locale: Locale(_locale?.call() != null &&
               (locales ?? [])
                   .map((e) => e.languageCode)
-                  .contains(locale?.call())
-          ? locale!.call()!
+                  .contains(_locale?.call())
+          ? _locale!.call()!
           : 'en'),
       theme: lightTheme,
       darkTheme: darkTheme,

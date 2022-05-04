@@ -26,6 +26,9 @@ abstract class Nav {
 
   static BuildContext get context => Get.context!;
 
+  static GlobalKey<NavigatorState>? nestedKey(dynamic key) =>
+      Get.nestedKey(key);
+
   static Future<void> loaded() async {
     while (Get.context == null) {
       await sleep(50);

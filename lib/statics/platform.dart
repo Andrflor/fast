@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
 import 'dart:io' as io show Platform;
 
 import './screen.dart';
@@ -41,9 +38,4 @@ abstract class Platform {
   static bool get isSmartPhone => isMobile && !isTablet;
 
   static bool hasKeyboard = !isDesktop;
-
-  static Locale? get currentLocale => Get.locale;
-
-  static Locale? get locale => Get.deviceLocale;
-  static set locale(Locale? loc) => loc == null ? null : Get.updateLocale(loc);
 }

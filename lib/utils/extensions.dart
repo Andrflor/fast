@@ -36,7 +36,13 @@ extension StringCasingExtension on String {
       .join('\n');
   String get label => this + ': ';
 
-  dynamic get itp => InterpolableString(tr);
+  String itp(Map<String, String> kwargs) {
+    String value = tr;
+    for (var kwarg in kwargs.entries) {
+      value = value.replaceAll('\$${kwarg.key}', kwarg.value.toString());
+    }
+    return value;
+  }
 }
 
 extension RxIterableOperators<T> on Iterable<Rx<T>> {
@@ -97,39 +103,6 @@ extension RxMapOperators<K, V> on RxMap<K, V> {
 
   RxMap<K, V> clone() => call().obs..bindStream(stream);
   void bind(RxMap<K, V> other) => bindStream(other.stream);
-}
-
-class InterpolableString {
-  late final VarArgsCallback callback;
-  InterpolableString(String _value) {
-    callback = ((args, kwargs) {
-      String value = _value;
-      for (var i = 0; i < args.length; i++) {
-        value = value.replaceAll('\$${i + 1}', args[i].toString());
-      }
-      for (var kwarg in kwargs.entries) {
-        value = value.replaceAll('\$${kwarg.key}', kwarg.value.toString());
-      }
-      return value;
-    });
-  }
-
-  static const _offset = 'Symbol("'.length;
-
-  String call() => callback([], {});
-
-  @override
-  String noSuchMethod(Invocation invocation) {
-    return callback(
-      invocation.positionalArguments,
-      invocation.namedArguments.map(
-        (_k, v) {
-          var k = _k.toString();
-          return MapEntry(k.substring(_offset, k.length - 2), v);
-        },
-      ),
-    );
-  }
 }
 
 extension NullOperand on num? {

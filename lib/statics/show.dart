@@ -300,9 +300,11 @@ abstract class Show {
     return date;
   }
 
-  static Future<bool> Function()? _payWall;
-  static void initPayWall(Future<bool> Function() payWallCallback) =>
+  static Future<bool> Function({bool locked})? _payWall;
+  static void initPayWall(
+          Future<bool> Function({bool locked}) payWallCallback) =>
       _payWall = payWallCallback;
 
-  static Future<bool> payWall() async => await _payWall?.call() ?? true;
+  static Future<bool> payWall({bool locked = false}) async =>
+      await _payWall?.call(locked: locked) ?? true;
 }

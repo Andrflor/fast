@@ -15,7 +15,7 @@ abstract class Nav {
   static String? parameter(String? name) => parameters?[name];
   static String? get then => parameter("then");
   static String get current =>
-      delegate.currentConfiguration!.currentPage?.name ?? "";
+      delegate.currentConfiguration?.currentPage?.name ?? "";
   static bool isCurrent(String route) => current.contains(route);
   static Future<bool> back() async => await dispatcher.didPopRoute();
   static Future<bool> closeOverlay() async =>

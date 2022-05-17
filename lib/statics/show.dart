@@ -300,11 +300,14 @@ abstract class Show {
     return date;
   }
 
-  static Future<bool> Function({bool locked})? _payWall;
+  static Future<bool> Function({bool locked, Map args})? _payWall;
   static void initPayWall(
-          Future<bool> Function({bool locked}) payWallCallback) =>
+          Future<bool> Function({bool locked, Map args}) payWallCallback) =>
       _payWall = payWallCallback;
 
-  static Future<bool> payWall({bool locked = false}) async =>
-      await _payWall?.call(locked: locked) ?? true;
+  static Future<bool> payWall({bool? locked, Map args = const {}}) async =>
+      (locked != null
+          ? await _payWall?.call(locked: locked, args: args)
+          : await _payWall?.call(args: args)) ??
+      true;
 }

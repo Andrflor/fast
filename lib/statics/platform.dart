@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'dart:io' as io show Platform;
 
 import './screen.dart';
 
+// ignore: empty_constructor_bodies
 abstract class Platform {
   static bool isAndroid = kIsWeb
       ? defaultTargetPlatform == TargetPlatform.android
@@ -38,4 +40,6 @@ abstract class Platform {
   static bool get isSmartPhone => isMobile && !isTablet;
 
   static bool hasKeyboard = !isDesktop;
+
+  static bool get isDarkMode => Get.isPlatformDarkMode;
 }

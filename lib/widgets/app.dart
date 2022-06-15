@@ -1,3 +1,4 @@
+import 'package:fast/statics/platform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -24,6 +25,8 @@ class App extends StatelessWidget {
   final String translationFile;
   final bool yamlI18n;
   final bool debugBanner;
+  final Color? Function(bool)? navigationBarColor;
+  final Color? Function(bool)? statusBarColor;
 
   static GetMaterialController get _controller => Get.rootController;
 
@@ -74,6 +77,8 @@ class App extends StatelessWidget {
       this.initialBindings,
       this.onBack,
       this.onExit,
+      this.statusBarColor,
+      this.navigationBarColor,
       final String? Function()? locale,
       this.lightTheme,
       this.darkMode,
@@ -119,10 +124,6 @@ class App extends StatelessWidget {
   }
 
   void run() async {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));
-
     WidgetsFlutterBinding.ensureInitialized();
 
     _translations =
@@ -133,6 +134,13 @@ class App extends StatelessWidget {
     } else {
       initialBindings?.dependencies();
     }
+
+    final isDarkMode = darkMode?.call() ?? Platform.isDarkMode;
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: statusBarColor?.call(isDarkMode),
+      systemNavigationBarColor: navigationBarColor?.call(isDarkMode),
+    ));
     runApp(this);
   }
 }

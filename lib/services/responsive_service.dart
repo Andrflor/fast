@@ -53,8 +53,7 @@ class ResponsiveService {
 
   void handleKeyboard() {
     if (Platform.hasKeyboard) {
-      keyboardHeight.value =
-          WidgetsBinding.instance?.window.viewInsets.bottom ?? 0;
+      keyboardHeight.value = WidgetsBinding.instance.window.viewInsets.bottom;
       final keyboardVisible = keyboardHeight.value != 0;
       if (isKeyboardVisible != keyboardVisible) {
         isKeyboardVisible = keyboardVisible;

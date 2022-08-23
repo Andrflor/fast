@@ -95,7 +95,7 @@ Future<void> sleep(int milliseconds) async =>
     await Future.delayed(Duration(milliseconds: milliseconds));
 
 void runAfterBuild(Function callback) {
-  WidgetsBinding.instance?.addPostFrameCallback((_) => callback());
+  WidgetsBinding.instance.addPostFrameCallback((_) => callback());
 }
 
 Worker runOnResize(WorkerCallback<Size> callback) {
@@ -109,8 +109,11 @@ mixin ScrollCapability on GetxController {
   void onInit() {
     super.onInit();
     scroll.addListener(_listener);
-    WidgetsBinding.instance?.addPostFrameCallback(
-        (_) => position.isScrollingNotifier.addListener(_valueListener));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scroll.hasClients) {
+        position.isScrollingNotifier.addListener(_valueListener);
+      }
+    });
   }
 
   RxBool scrolling = false.obs;
@@ -134,9 +137,9 @@ mixin ScrollCapability on GetxController {
     isScrolling = position.isScrollingNotifier.value;
   }
 
-  double get offset => scroll.offset;
+  double get offset => position.pixels;
 
-  ScrollPosition get position => scroll.position;
+  ScrollPosition get position => scroll.positions.last;
 
   double get initialScrollOffset => scroll.initialScrollOffset;
 

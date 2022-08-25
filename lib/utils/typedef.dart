@@ -16,23 +16,29 @@ export 'package:get/get_connect/http/src/status/http_status.dart';
 export 'package:get/get_connect/http/src/request/request.dart';
 export 'package:get/get_connect/http/src/multipart/form_data.dart';
 export 'package:get/get_connect/http/src/multipart/multipart_file.dart';
-export 'package:get/get_instance/src/bindings_interface.dart';
 export 'package:get/get_navigation/src/routes/transitions_type.dart';
 export 'package:get/get_rx/src/rx_types/rx_types.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 export 'package:get/get_utils/src/extensions/internacionalization.dart';
+export 'package:get/get_state_manager/src/simple/get_state.dart'
+    hide GetControllerBuilder, GetBuilder;
+export 'package:get/get_navigation/src/routes/parse_route.dart';
+export 'package:get/get_navigation/src/routes/get_navigation_interface.dart'
+    show PopMode, PreventDuplicateHandlingMode;
 export 'package:get/get_navigation/src/routes/custom_transition.dart';
 export 'package:get/get_rx/src/rx_workers/rx_workers.dart'
     show Worker, Workers, WorkerCallback;
 
 // Some syntaxic sugar
 typedef LifeCycleController = SuperController;
+typedef ControllerBuilder = GetControllerBuilder;
+typedef StateBuilder = GetBuilder;
 typedef BareController = RxController;
 typedef Toast = GetSnackBar;
 typedef Utils = GetUtils;
+typedef RxStatus = GetStatus;
 typedef Middleware = GetMiddleware;
-typedef NavConfig = GetNavConfig;
 typedef NavPage = GetPage;
 typedef RouterOutlet = GetRouterOutlet;
 typedef ObxBuilder<T extends GetxController> = GetBuilder<T>;
@@ -51,6 +57,11 @@ abstract class AppException implements Exception {
 
   @override
   toString() => message == '' ? super.toString() : message;
+}
+
+abstract class MainBinding {
+  List<Bind> dependencies();
+  void init();
 }
 
 class VarArgsFunction {
@@ -220,7 +231,7 @@ abstract class GetWidget<S extends WidgetAware?> extends GetWidgetCache {
   WidgetCache createWidgetCache() => _GetCache<S>();
 }
 
-mixin WidgetAware<T extends Widget> on GetLifeCycleBase {
+mixin WidgetAware<T extends Widget> on GetLifeCycleMixin {
   BuildContext? get context => _context;
   BuildContext? _context;
 
@@ -238,7 +249,7 @@ class _GetCache<S extends WidgetAware?> extends WidgetCache<GetWidget<S>> {
   InstanceInfo? info;
   @override
   void onInit() {
-    info = GetInstance().getInstanceInfo<S>(tag: widget!.tag);
+    info = Get.getInstanceInfo<S>(tag: widget!.tag);
 
     _isCreator = info!.isPrepared && info!.isCreate;
 
@@ -276,12 +287,12 @@ class _GetCache<S extends WidgetAware?> extends WidgetCache<GetWidget<S>> {
   }
 }
 
-mixin AutoDispose on GetLifeCycleBase {
+mixin AutoDispose on GetLifeCycleMixin {
   final List<Worker> _workers = <Worker>[];
 
   @nonVirtual
   Worker ever<T>(
-    RxInterface<T> listener,
+    GetListenable<T> listener,
     WorkerCallback<T> callback, {
     dynamic condition = true,
     Function? onError,
@@ -319,7 +330,7 @@ mixin AutoDispose on GetLifeCycleBase {
 
   @nonVirtual
   Worker once<T>(
-    RxInterface<T> listener,
+    GetListenable<T> listener,
     WorkerCallback<T> callback, {
     dynamic condition = true,
     Function? onError,
@@ -338,7 +349,7 @@ mixin AutoDispose on GetLifeCycleBase {
 
   @nonVirtual
   Worker interval<T>(
-    RxInterface<T> listener,
+    GetListenable<T> listener,
     WorkerCallback<T> callback, {
     Duration time = const Duration(seconds: 1),
     dynamic condition = true,
@@ -358,7 +369,7 @@ mixin AutoDispose on GetLifeCycleBase {
 
   @nonVirtual
   Worker debounce<T>(
-    RxInterface<T> listener,
+    GetListenable<T> listener,
     WorkerCallback<T> callback, {
     Duration? time,
     Function? onError,
@@ -408,32 +419,30 @@ mixin WindowResizeListener on AutoDispose {
 
 mixin SimpleState<T> on StateMixin<T> {
   @mustCallSuper
-  void loading([T? state]) {
-    change(state ?? this.state, status: RxStatus.loading());
+  void loading() {
+    change(LoadingStatus<T>());
   }
 
   @mustCallSuper
-  void empty([T? state]) {
-    change(state ?? this.state, status: RxStatus.empty());
+  void empty() {
+    change(EmptyStatus<T>());
   }
 
   @mustCallSuper
   void success([T? state]) {
-    change(state ?? this.state, status: RxStatus.success());
+    change(SuccessStatus<T>(state ?? this.state));
   }
 
   @mustCallSuper
-  void error([String? error, T? state]) {
-    change(state ?? this.state, status: RxStatus.error(error));
+  void error([String? error]) {
+    change(ErrorStatus<T, String>(error));
   }
-
-  T get model => value!;
 }
 
 abstract class Controller<T> = GetxController
     with StateMixin<T>, SimpleState<T>, AutoDispose, WidgetAware, AsyncInit;
 
-mixin AsyncInit on GetLifeCycleBase {
+mixin AsyncInit on GetLifeCycleMixin {
   final _completer = Completer<void>();
   Future<void> get asyncInitDone => _completer.future;
 
@@ -451,7 +460,7 @@ mixin Controlled<T extends Controller> on Widget {
 
 mixin ViewState<T extends Controller> on Widget implements Controlled<T> {
   @nonVirtual
-  String get error => controller.status.errorMessage ?? '';
+  String get error => controller.status.errorMessage;
 
   Widget onSucces(BuildContext context) => const SizedBox.shrink();
 

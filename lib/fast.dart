@@ -1,6 +1,5 @@
 library fast;
 
-export 'services/scaffold_layout_controller.dart';
 export 'services/responsive_service.dart';
 export 'services/scaffold_service.dart';
 
@@ -13,10 +12,10 @@ export 'widgets/ignore_keyboard.dart';
 export 'widgets/avoid_keyboard.dart';
 
 export 'statics/nav.dart';
+export 'statics/dep.dart';
 export 'statics/screen.dart';
 export 'statics/platform.dart';
 export 'statics/menu.dart';
-export 'statics/dep.dart';
 export 'statics/design.dart';
 export 'statics/keyboard.dart';
 export 'statics/show.dart';

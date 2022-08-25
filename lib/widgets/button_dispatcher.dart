@@ -39,7 +39,7 @@ class ButtonDispatcher extends RootBackButtonDispatcher {
   Future<bool> didPopRoute() async {
     String? path;
     if (!Nav.isAnyOverlay && Nav.history.length >= 2) {
-      path = Nav.history[Nav.history.length - 2].location;
+      path = Nav.history[Nav.history.length - 2].pageSettings?.path;
     }
 
     return (await NavIntent(path ?? '', NavIntents.back).navigate<bool>()) ??

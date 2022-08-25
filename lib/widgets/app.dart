@@ -5,8 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:yaml/yaml.dart';
 
-import '../statics/nav.dart';
-
+import '../utils/typedef.dart';
 import 'button_dispatcher.dart';
 import 'mouse_drag_scroll_behavior.dart';
 import 'responsive.dart';
@@ -17,8 +16,9 @@ late final ButtonDispatcher dispatcher;
 class App extends StatelessWidget {
   final String title;
   final String? initialRoute;
-  final Bindings? initialBindings;
+  final MainBinding? initialBindings;
   final List<GetPage> routes;
+  final TransitionBuilder? builder;
   final List<Locale>? locales;
   final ThemeData? lightTheme;
   final ThemeData? darkTheme;
@@ -67,6 +67,7 @@ class App extends StatelessWidget {
   /// fuction return false no pop will happen
   final Future<bool?> Function()? onExit;
 
+  late final binds = initialBindings?.dependencies() ?? [];
   late final Map<String, Map<String, String>>? _translations;
 
   App(
@@ -75,6 +76,7 @@ class App extends StatelessWidget {
       required this.routes,
       this.initialRoute,
       this.initialBindings,
+      this.builder,
       this.onBack,
       this.onExit,
       this.statusBarColor,
@@ -95,14 +97,16 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp.router(
+    return GetMaterialApp(
       title: title,
-      onReady: () => initialRoute != null ? Nav.offAll(initialRoute!) : null,
+      initialRoute: initialRoute,
       getPages: routes,
+      binds: binds,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      builder: (BuildContext context, Widget? widget) => Responsive(widget),
+      builder: (BuildContext context, Widget? widget) =>
+          Responsive(builder?.call(context, widget) ?? widget),
       supportedLocales: locales ?? [],
-      backButtonDispatcher: dispatcher,
+      // backButtonDispatcher: dispatcher,
       scrollBehavior: MouseDragScrollBehavior(),
       translationsKeys: _translations,
       defaultTransition: Transition.fadeIn,
@@ -129,10 +133,10 @@ class App extends StatelessWidget {
     _translations =
         yamlI18n ? await (_loadTranslations(translationFile)) : null;
 
-    if (initialBindings?.dependencies is Future<dynamic> Function()) {
-      await (initialBindings?.dependencies() as Future<dynamic>);
+    if (initialBindings?.init is Future<dynamic> Function()) {
+      await (initialBindings?.init() as Future<dynamic>);
     } else {
-      initialBindings?.dependencies();
+      initialBindings?.init();
     }
 
     final isDarkMode = darkMode?.call() ?? Platform.isDarkMode;

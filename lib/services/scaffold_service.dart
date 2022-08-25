@@ -11,7 +11,6 @@ class ScaffoldService {
   final List<AdaptiveScaffoldState> activeScaffolds = [];
 
   final navCollapsed = false.obs;
-  final layoutController = Dep.put(ScaffoldLayoutController(), permanent: true);
 
   bool get isOpen => isOpenDelegate?.call() ?? false;
 

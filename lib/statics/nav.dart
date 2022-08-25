@@ -8,26 +8,23 @@ import '../utils/typedef.dart' show sleep;
 import '../utils/extensions.dart' show RxOperators;
 
 abstract class Nav {
-  static GetDelegate delegate = Get.rootDelegate;
-  static List<GetNavConfig> get history => delegate.history;
-  static Map<String, String>? get parameters =>
-      delegate.currentConfiguration?.currentPage?.parameters;
+  static GetDelegate delegate = Get.rootController.rootDelegate;
+  static List<RouteDecoder> get history => delegate.activePages;
+  static Map<String, String>? get parameters => delegate.parameters;
   static String? parameter(String? name) => parameters?[name];
   static String? get then => parameter("then");
-  static String get current =>
-      delegate.currentConfiguration?.currentPage?.name ?? "";
+  static String get current => delegate.currentConfiguration?.route?.name ?? "";
   static bool isCurrent(String route) => current.contains(route);
   static Future<bool> back() async => await dispatcher.didPopRoute();
   static Future<bool> closeOverlay() async =>
       Nav.isAnyOverlay ? await Nav.pop() : false;
   static Future<bool> pop() async =>
-      await delegate.popRoute(popMode: PopMode.History);
+      await delegate.popRoute(popMode: PopMode.history);
   static Future<bool> canPop() async => await delegate.canPopHistory();
 
   static BuildContext get context => Get.context!;
 
-  static GlobalKey<NavigatorState>? nestedKey(dynamic key) =>
-      Get.nestedKey(key);
+  static GetDelegate? nestedKey(dynamic key) => Get.nestedKey(key);
 
   static Future<void> loaded() async {
     while (Get.context == null) {
@@ -136,20 +133,18 @@ class NavIntent {
     }
   }
 
-  Future<T?>? to<T>() async => Nav.delegate
-      .toNamed<T>(page, parameters: parameters, arguments: arguments);
+  Future<T?>? to<T>() async =>
+      Get.toNamed<T>(page, parameters: parameters, arguments: arguments);
 
   Future<T?>? off<T>() async {
     Nav.history.removeLast();
-    return Nav.delegate
-        .toNamed<T>(page, arguments: arguments, parameters: parameters);
+    return Get.toNamed<T>(page, arguments: arguments, parameters: parameters);
   }
 
   Future<T?>? offAll<T>() async {
     await Nav.clearHistory();
     Nav.history.removeLast();
-    return Nav.delegate
-        .toNamed<T>(page, arguments: arguments, parameters: parameters);
+    return Get.toNamed<T>(page, arguments: arguments, parameters: parameters);
   }
 }
 

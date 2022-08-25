@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../services/scaffold_layout_controller.dart';
+import '../services/responsive_service.dart';
 import '../services/scaffold_service.dart';
 import '../utils/typedef.dart';
 
@@ -65,8 +65,6 @@ class AdaptiveScaffold extends StatefulWidget {
 }
 
 class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
-  final rebuild = false.obs;
-
   @override
   void initState() {
     _scaffoldService.pushScaffold(this);
@@ -93,12 +91,11 @@ class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return ObxBuilder<ScaffoldLayoutController>(
-      init: _scaffoldService.layoutController,
-      builder: (layout) => Row(
+    return ObxValue(
+      (RxBool data) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (layout.isDocked) widget.drawer!,
+          if (data.value) widget.drawer!,
           Expanded(
             child: Scaffold(
               key: widget._key,
@@ -112,7 +109,7 @@ class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               persistentFooterButtons: widget.persistentFooterButtons,
               drawer: widget.appBar == null
                   ? null
-                  : layout.isDocked
+                  : data.value
                       ? null
                       : widget.drawer,
               onDrawerChanged: widget.onDrawerChanged,
@@ -136,6 +133,7 @@ class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           ),
         ],
       ),
+      ResponsiveService().displayMenu,
     );
   }
 

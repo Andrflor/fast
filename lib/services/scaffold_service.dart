@@ -1,14 +1,11 @@
 import 'package:fast/fast.dart';
 import 'package:get/get_rx/src/rx_workers/rx_workers.dart' show ever;
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 class ScaffoldService {
   Function()? openDelegate;
   Function()? closeDelegate;
   bool Function()? isOpenDelegate;
-
-  final List<AdaptiveScaffoldState> activeScaffolds = [];
 
   final navCollapsed = false.obs;
   final layoutController = Dep.put(ScaffoldLayoutController(), permanent: true);
@@ -34,19 +31,10 @@ class ScaffoldService {
   }
 
   void pushScaffold(AdaptiveScaffoldState scaffold) {
-    activeScaffolds.add(scaffold);
     _registerScaffold(scaffold.open, scaffold.close, scaffold.isDrawerOpen);
   }
 
-  void removeScaffold(AdaptiveScaffoldState scaffold) {
-    activeScaffolds.remove(scaffold);
-    _registerScaffold(
-        activeScaffolds.lastOrNull?.open,
-        activeScaffolds.lastOrNull?.close,
-        activeScaffolds.lastOrNull?.isDrawerOpen);
-  }
-
-  AppBar injectAppBar(AppBar appBar) {
+  AppBar injectAppBar(AppBar appBar, AdaptiveScaffoldState state) {
     return AppBar(
       key: appBar.key,
       title: appBar.title,
@@ -55,7 +43,12 @@ class ScaffoldService {
       leading: appBar.leading ??
           Obx(
             () => IconButton(
-                onPressed: Menu.isDocked ? Menu.collapse : Menu.open,
+                onPressed: Menu.isDocked
+                    ? Menu.collapse
+                    : () {
+                        pushScaffold(state);
+                        state.isDrawerOpen() ? state.close() : state.open();
+                      },
                 icon: Icon(Menu.isDocked
                     ? (Menu.isCollapsed
                         ? Icons.chevron_right

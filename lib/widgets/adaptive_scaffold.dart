@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../services/responsive_service.dart';
+import '../services/scaffold_layout_controller.dart';
 import '../services/scaffold_service.dart';
 import '../utils/typedef.dart';
 
@@ -65,42 +65,30 @@ class AdaptiveScaffold extends StatefulWidget {
 }
 
 class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
-  @override
-  void initState() {
-    _scaffoldService.pushScaffold(this);
-    super.initState();
-  }
+  ScaffoldState? get scaffoldState =>
+      (widget._key as GlobalKey<ScaffoldState>).currentState;
 
   final _scaffoldService = ScaffoldService();
 
-  bool isDrawerOpen() =>
-      (widget._key as GlobalKey<ScaffoldState>).currentState?.isDrawerOpen ??
-      false;
+  bool isDrawerOpen() => scaffoldState?.isDrawerOpen ?? false;
 
-  void open() {
-    if (!isDrawerOpen()) {
-      (widget._key as GlobalKey<ScaffoldState>).currentState?.openDrawer();
-    }
-  }
-
-  void close() {
-    if (isDrawerOpen()) {
-      (widget._key as GlobalKey<ScaffoldState>).currentState?.openEndDrawer();
-    }
-  }
+  void open() => scaffoldState?.openDrawer();
+  void close() => scaffoldState?.closeDrawer();
 
   @override
   Widget build(BuildContext context) {
-    return ObxValue(
-      (RxBool data) => Row(
+    return ObxBuilder<ScaffoldLayoutController>(
+      init: _scaffoldService.layoutController,
+      builder: (layout) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (data.value) widget.drawer!,
+          if (layout.isDocked) widget.drawer!,
           Expanded(
             child: Scaffold(
               key: widget._key,
               appBar: (widget.appBar is AppBar)
-                  ? _scaffoldService.injectAppBar((widget.appBar as AppBar))
+                  ? _scaffoldService.injectAppBar(
+                      (widget.appBar as AppBar), this)
                   : widget.appBar,
               body: widget.body,
               floatingActionButton: widget.floatingActionButton,
@@ -109,7 +97,7 @@ class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               persistentFooterButtons: widget.persistentFooterButtons,
               drawer: widget.appBar == null
                   ? null
-                  : data.value
+                  : layout.isDocked
                       ? null
                       : widget.drawer,
               onDrawerChanged: widget.onDrawerChanged,
@@ -133,13 +121,6 @@ class AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           ),
         ],
       ),
-      ResponsiveService().displayMenu,
     );
-  }
-
-  @override
-  void dispose() {
-    _scaffoldService.removeScaffold(this);
-    super.dispose();
   }
 }

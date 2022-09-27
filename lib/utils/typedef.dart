@@ -224,6 +224,8 @@ mixin WidgetAware<T extends Widget> on GetLifeCycleBase {
   BuildContext? get context => _context;
   BuildContext? _context;
 
+  void passContext(BuildContext context) => _context = context;
+
   T? get widget => _widget;
   T? _widget;
 

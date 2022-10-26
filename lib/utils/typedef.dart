@@ -29,7 +29,6 @@ export 'package:get/get_rx/src/rx_workers/rx_workers.dart'
 // Some syntaxic sugar
 typedef LifeCycleController = SuperController;
 typedef BareController = RxController;
-typedef Toast = GetSnackBar;
 typedef Utils = GetUtils;
 typedef Middleware = GetMiddleware;
 typedef NavConfig = GetNavConfig;

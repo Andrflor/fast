@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import './nav.dart';
-import '../../utils/typedef.dart';
+import '../widgets/toast.dart';
 
 abstract class Show {
   static int _overlays = 0;

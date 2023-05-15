@@ -472,8 +472,9 @@ mixin ViewState<T extends Controller> on Widget implements Controlled<T> {
           onLoading: onLoading(context));
 }
 
-abstract class View<T extends Controller> extends GetView<T> with ViewState<T> {
-  const View({Key? key}) : super(key: key);
+abstract class AppView<T extends Controller> extends GetView<T>
+    with ViewState<T> {
+  const AppView({Key? key}) : super(key: key);
 }
 
 /// Syntaxic sugar for Theme.of(context)

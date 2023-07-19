@@ -28,6 +28,21 @@ class App extends StatelessWidget {
   final Color? Function(bool)? navigationBarColor;
   final Color? Function(bool)? statusBarColor;
 
+  final List<NavigatorObserver>? navigatorObservers;
+  final TransitionBuilder? builder;
+  final CustomTransition? customTransition;
+  final ValueChanged<Routing?>? routingCallback;
+  final Transition? defaultTransition;
+  final bool? opaqueRoute;
+  final VoidCallback? onInit;
+  final VoidCallback? onReady;
+  final VoidCallback? onDispose;
+  final Duration? transitionDuration;
+  final GetPage? unknownRoute;
+  final RouteInformationProvider? routeInformationProvider;
+  final RouteInformationParser<Object>? routeInformationParser;
+  final RouterDelegate<Object>? routerDelegate;
+
   static GetMaterialController get _controller => Get.rootController;
 
   static void restart() => _controller.restartApp();
@@ -69,26 +84,40 @@ class App extends StatelessWidget {
 
   late final Map<String, Map<String, String>>? _translations;
 
-  App(
-      {Key? key,
-      required this.title,
-      required this.routes,
-      this.initialRoute,
-      this.initialBindings,
-      this.onBack,
-      this.onExit,
-      this.statusBarColor,
-      this.navigationBarColor,
-      final String? Function()? locale,
-      this.lightTheme,
-      this.darkMode,
-      this.translationFile = 'assets/translations.yaml',
-      this.yamlI18n = false,
-      this.debugBanner = false,
-      this.locales,
-      this.useSystemThemeMode = true,
-      this.darkTheme})
-      : super(key: key) {
+  App({
+    Key? key,
+    required this.title,
+    required this.routes,
+    this.initialRoute,
+    this.initialBindings,
+    this.routeInformationProvider,
+    this.builder,
+    this.routingCallback,
+    this.defaultTransition,
+    this.opaqueRoute,
+    this.transitionDuration,
+    this.navigatorObservers,
+    this.unknownRoute,
+    this.onBack,
+    this.onExit,
+    this.statusBarColor,
+    this.navigationBarColor,
+    final String? Function()? locale,
+    this.lightTheme,
+    this.darkMode,
+    this.translationFile = 'assets/translations.yaml',
+    this.yamlI18n = false,
+    this.debugBanner = false,
+    this.locales,
+    this.useSystemThemeMode = true,
+    this.darkTheme,
+    this.customTransition,
+    this.onInit,
+    this.onReady,
+    this.onDispose,
+    this.routeInformationParser,
+    this.routerDelegate,
+  }) : super(key: key) {
     _locale = locale;
     dispatcher = ButtonDispatcher(onBack: onBack, onExit: onExit);
   }
@@ -97,10 +126,21 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
       title: title,
-      onReady: () => initialRoute != null ? Nav.offAll(initialRoute!) : null,
+      onReady: () {
+        if (initialRoute != null) Nav.offAll(initialRoute!);
+        onReady?.call();
+      },
+      navigatorObservers: navigatorObservers,
       getPages: routes,
+      onInit: onInit,
+      customTransition: customTransition,
+      routeInformationParser: routeInformationParser,
+      unknownRoute: unknownRoute,
+      routerDelegate: routerDelegate,
+      onDispose: onDispose,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
-      builder: (BuildContext context, Widget? widget) => Responsive(widget),
+      builder: builder ??
+          (BuildContext context, Widget? widget) => Responsive(widget),
       supportedLocales: locales ?? [],
       backButtonDispatcher: dispatcher,
       scrollBehavior: MouseDragScrollBehavior(),

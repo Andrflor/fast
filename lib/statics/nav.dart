@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_navigation/src/root/parse_route.dart';
 
 import '../widgets/app.dart' show dispatcher;
 import '../utils/typedef.dart' show sleep;
@@ -20,9 +21,10 @@ abstract class Nav {
   static Future<bool> back() async => await dispatcher.didPopRoute();
   static Future<bool> closeOverlay() async =>
       Nav.isAnyOverlay ? await Nav.pop() : false;
-  static Future<bool> pop() async =>
-      await delegate.popRoute(popMode: PopMode.History);
+  static Future<bool> pop([PopMode popMode = PopMode.History]) async =>
+      await delegate.popRoute(popMode: popMode);
   static Future<bool> canPop() async => await delegate.canPopHistory();
+  static ParseRouteTree get routeTree => Get.routeTree;
 
   static BuildContext get context => Get.context!;
 

@@ -18,6 +18,9 @@ export 'package:get/get_connect/http/src/multipart/form_data.dart';
 export 'package:get/get_connect/http/src/multipart/multipart_file.dart';
 export 'package:get/get_instance/src/bindings_interface.dart';
 export 'package:get/get_navigation/src/routes/transitions_type.dart';
+export 'package:get/get_navigation/src/routes/get_route.dart';
+export 'package:get/get_navigation/src/root/parse_route.dart'
+    hide FirstWhereExt;
 export 'package:get/get_rx/src/rx_types/rx_types.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 export 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
